@@ -1,29 +1,32 @@
-// "Neural field" background: drifting nodes joined by faint synapses.
-// Near the cursor, nodes fire signals that travel along the links like
-// activations through a network; clicking sends a shockwave that pushes
-// nodes outward and fires everything it passes. Pauses when the tab is
-// hidden; renders one static frame for prefers-reduced-motion. On touch
-// screens it also holds still while you type, so the keyboard stays responsive.
+// "Data flow" background: faint pipeline lanes curve across the page and
+// glowing packets stream along them left to right, lighting up the stage
+// nodes they pass, like records moving through a pipeline. Packets near the
+// cursor speed up and brighten; clicking empty space sends a burst of packets
+// out along the nearest lanes. Pauses when the tab is hidden; renders one
+// static frame for prefers-reduced-motion. On touch screens it also holds
+// still while you type, so the keyboard stays responsive.
 
 import { isTextField } from "./text-fields.js";
 
 const MAX_DPR = 2;
-const NODE_DENSITY = 1 / 13000; // nodes per px²
-const MAX_NODES = 130;
-const LINK_DISTANCE = 135;
-const CURSOR_RADIUS = 190;
-const DRIFT_SPEED = 0.14;
-const CURSOR_PULL = 0.005;
-const FRICTION = 0.965;
-const FIRE_CHANCE = 0.035;     // per frame, per node near the cursor
-const AMBIENT_FIRE_CHANCE = 0.0006;
-const SIGNAL_SPEED = 0.035;    // fraction of a link travelled per frame
-const MAX_SIGNALS = 90;
-const GLOW_DECAY = 0.94;
-const RIPPLE_SPEED = 6;
-const RIPPLE_MAX_RADIUS = 460;
-const RIPPLE_FORCE = 2.2;
-const RIPPLE_BAND = 26;
+const LANE_SPACING = 74;          // px between lanes
+const LANE_STEP = 18;             // px between points when drawing a lane
+const STAGES_PER_LANE = 3;
+const PACKET_DENSITY = 1 / 26000; // packets per px²
+const MAX_PACKETS = 70;
+const MIN_SPEED = 0.5;
+const MAX_SPEED = 1.6;
+const MIN_TAIL = 40;
+const MAX_TAIL = 120;
+const CURSOR_RADIUS = 170;
+const CURSOR_BOOST = 2.6;         // speed multiplier right under the cursor
+const STAGE_GLOW_DECAY = 0.95;
+const BURST_PACKETS = 10;
+const BURST_LANES = 3;
+const BURST_SPEED = 4.5;
+const BURST_SLOWDOWN = 0.985;
+const RIPPLE_SPEED = 5;
+const RIPPLE_MAX_RADIUS = 220;
 const RESIZE_DEBOUNCE_MS = 150;
 const MIN_HEIGHT_CHANGE_PX = 150; // mobile URL bar show/hide is smaller than this
 
@@ -36,163 +39,162 @@ function readColors() {
   return Object.freeze({
     node: read("--net-node", DEFAULT_COLORS.node),
     link: read("--net-link", DEFAULT_COLORS.link),
-    a: read("--net-a", DEFAULT_COLORS.a), // violet: cursor links and most signals
-    b: read("--net-b", DEFAULT_COLORS.b), // teal signals
+    a: read("--net-a", DEFAULT_COLORS.a), // amber packets and lit stages
+    b: read("--net-b", DEFAULT_COLORS.b), // sage packets
   });
 }
 
-function createNodes(width, height) {
-  const count = Math.min(MAX_NODES, Math.round(width * height * NODE_DENSITY));
-  return Array.from({ length: count }, () => ({
-    x: Math.random() * width,
-    y: Math.random() * height,
-    vx: (Math.random() - 0.5) * DRIFT_SPEED,
-    vy: (Math.random() - 0.5) * DRIFT_SPEED,
-    size: Math.random() * 1.1 + 0.5,
-    glow: 0,
+const random = (min, max) => min + Math.random() * (max - min);
+
+/** Gently curved horizontal lanes, each with a few stage nodes along it. */
+function createLanes(width, height) {
+  const count = Math.max(4, Math.round(height / LANE_SPACING));
+  return Array.from({ length: count }, (_, i) => ({
+    y: ((i + 0.5) / count) * height + random(-12, 12),
+    amp: random(8, 30),
+    freq: random(0.0015, 0.004),
+    phase: random(0, Math.PI * 2),
+    stages: Array.from({ length: STAGES_PER_LANE }, (_, s) => ({
+      x: ((s + random(0.3, 0.7)) / STAGES_PER_LANE) * width,
+      glow: 0,
+    })),
   }));
 }
 
-function findNeighbors(nodes) {
-  const links = [];
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-      if (dist < LINK_DISTANCE) links.push({ a: i, b: j, strength: 1 - dist / LINK_DISTANCE });
-    }
-  }
-  return links;
-}
+const laneY = (lane, x) => lane.y + lane.amp * Math.sin(x * lane.freq + lane.phase);
 
-function stepNode(node, width, height, cursor, ripples) {
-  let { vx, vy, glow } = node;
-  if (cursor.active) {
-    const dx = cursor.x - node.x;
-    const dy = cursor.y - node.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist < CURSOR_RADIUS && dist > 24) {
-      vx += (dx / dist) * CURSOR_PULL;
-      vy += (dy / dist) * CURSOR_PULL;
-    }
-  }
-  for (const r of ripples) {
-    const dx = node.x - r.x;
-    const dy = node.y - r.y;
-    const dist = Math.hypot(dx, dy) || 1;
-    if (Math.abs(dist - r.radius) < RIPPLE_BAND) {
-      const strength = RIPPLE_FORCE * (1 - r.radius / RIPPLE_MAX_RADIUS);
-      vx += (dx / dist) * strength;
-      vy += (dy / dist) * strength;
-      glow = 1;
-    }
-  }
-  if (Math.hypot(vx, vy) > DRIFT_SPEED) {
-    vx *= FRICTION;
-    vy *= FRICTION;
-  }
+function createPacket(lanes, width, { x, lane, speed, burst = false } = {}) {
+  const tail = random(MIN_TAIL, MAX_TAIL);
   return {
-    ...node,
-    x: (node.x + vx + width) % width,
-    y: (node.y + vy + height) % height,
-    vx, vy,
-    glow: glow * GLOW_DECAY,
+    lane: lane ?? Math.floor(Math.random() * lanes.length),
+    x: x ?? random(-tail - width * 0.3, -tail),
+    speed: speed ?? random(MIN_SPEED, MAX_SPEED),
+    tail,
+    tone: Math.random() < 0.6 ? "a" : "b",
+    burst,
   };
 }
 
-/** Spawns signals from nodes that are near the cursor, recently hit, or randomly ambient. */
-function spawnSignals(nodes, links, cursor, signals) {
-  if (signals.length >= MAX_SIGNALS || links.length === 0) return signals;
-  const spawned = [];
-  for (const link of links) {
-    const from = nodes[link.a];
-    const nearCursor = cursor.active && Math.hypot(from.x - cursor.x, from.y - cursor.y) < CURSOR_RADIUS;
-    const chance = nearCursor ? FIRE_CHANCE : from.glow > 0.6 ? FIRE_CHANCE * 2 : AMBIENT_FIRE_CHANCE;
-    if (Math.random() < chance * link.strength) {
-      const forward = Math.random() < 0.5;
-      spawned.push({
-        from: forward ? link.a : link.b,
-        to: forward ? link.b : link.a,
-        t: 0,
-        tone: Math.random() < 0.6 ? "a" : "b",
-      });
+const targetPackets = (width, height) => Math.min(MAX_PACKETS, Math.round(width * height * PACKET_DENSITY));
+
+/** Packets spread across the screen, for the first frame and the reduced-motion still. */
+function seedPackets(lanes, width, height) {
+  return Array.from({ length: targetPackets(width, height) }, () => createPacket(lanes, width, { x: random(0, width) }));
+}
+
+function cursorBoost(packet, lanes, cursor) {
+  if (!cursor.active) return 1;
+  const dist = Math.hypot(packet.x - cursor.x, laneY(lanes[packet.lane], packet.x) - cursor.y);
+  return dist < CURSOR_RADIUS ? 1 + (CURSOR_BOOST - 1) * (1 - dist / CURSOR_RADIUS) : 1;
+}
+
+/** Moves packets, lights the stages they cross, and tops the stream back up. */
+function step(state, width, height) {
+  const { lanes, cursor } = state;
+  const packets = [];
+  for (const p of state.packets) {
+    const boost = cursorBoost(p, lanes, cursor);
+    const speed = p.burst ? Math.max(p.speed * BURST_SLOWDOWN, MAX_SPEED) : p.speed;
+    const x = p.x + speed * boost;
+    for (const stage of lanes[p.lane].stages) {
+      if (p.x < stage.x && x >= stage.x) stage.glow = 1;
     }
-    if (signals.length + spawned.length >= MAX_SIGNALS) break;
+    if (x - p.tail < width) packets.push({ ...p, x, speed, boost });
   }
-  return [...signals, ...spawned];
+  const missing = targetPackets(width, height) - packets.filter((p) => !p.burst).length;
+  for (let i = 0; i < missing; i++) packets.push(createPacket(lanes, width));
+  for (const lane of lanes) for (const stage of lane.stages) stage.glow *= STAGE_GLOW_DECAY;
+  const ripples = state.ripples
+    .map((r) => ({ ...r, radius: r.radius + RIPPLE_SPEED }))
+    .filter((r) => r.radius < RIPPLE_MAX_RADIUS);
+  return { ...state, packets, ripples };
 }
 
-/** Advances signals; a signal that arrives lights up its target node. */
-function stepSignals(signals, nodes) {
-  const arrived = new Set();
-  const moving = [];
-  for (const s of signals) {
-    const next = { ...s, t: s.t + SIGNAL_SPEED };
-    if (next.t >= 1) arrived.add(s.to);
-    else if (nodes[s.to] && nodes[s.from]) moving.push(next);
-  }
-  const lit = nodes.map((n, i) => (arrived.has(i) ? { ...n, glow: Math.max(n.glow, 0.9) } : n));
-  return { signals: moving, nodes: lit };
-}
-
-function line(ctx, x1, y1, x2, y2, rgb, alpha, width = 0.6) {
-  ctx.strokeStyle = `rgba(${rgb}, ${alpha})`;
-  ctx.lineWidth = width;
+function drawLane(ctx, lane, width, colors) {
+  ctx.strokeStyle = `rgba(${colors.link}, 0.07)`;
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
+  for (let x = 0; x <= width + LANE_STEP; x += LANE_STEP) {
+    const y = laneY(lane, x);
+    if (x === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function drawPacket(ctx, p, lane, colors) {
+  const color = colors[p.tone];
+  const glow = Math.min(1, 0.55 + ((p.boost ?? 1) - 1) * 0.35 + (p.burst ? 0.3 : 0));
+  const start = p.x - p.tail;
+  const gradient = ctx.createLinearGradient(start, 0, p.x, 0);
+  gradient.addColorStop(0, `rgba(${color}, 0)`);
+  gradient.addColorStop(1, `rgba(${color}, ${glow})`);
+  ctx.strokeStyle = gradient;
+  ctx.lineWidth = 1.4;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  const segments = Math.max(2, Math.round(p.tail / 10));
+  for (let i = 0; i <= segments; i++) {
+    const x = start + (p.tail * i) / segments;
+    const y = laneY(lane, x);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  const y = laneY(lane, p.x);
+  ctx.fillStyle = `rgba(${color}, ${glow * 0.25})`;
+  ctx.beginPath();
+  ctx.arc(p.x, y, 4.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = `rgba(${color}, ${Math.min(1, glow + 0.3)})`;
+  ctx.beginPath();
+  ctx.arc(p.x, y, 1.8, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawStage(ctx, stage, lane, colors) {
+  const y = laneY(lane, stage.x);
+  if (stage.glow > 0.05) {
+    ctx.fillStyle = `rgba(${colors.a}, ${stage.glow * 0.22})`;
+    ctx.beginPath();
+    ctx.arc(stage.x, y, 4 + 8 * stage.glow, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.strokeStyle = `rgba(${stage.glow > 0.05 ? colors.a : colors.node}, ${0.25 + stage.glow * 0.6})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(stage.x, y, 3, 0, Math.PI * 2);
   ctx.stroke();
 }
 
 function draw(ctx, width, height, state, colors) {
-  const { nodes, links, signals, ripples, cursor } = state;
+  const { lanes, packets, ripples } = state;
   ctx.clearRect(0, 0, width, height);
-
-  for (const { a, b, strength } of links) {
-    const glow = Math.max(nodes[a].glow, nodes[b].glow);
-    line(ctx, nodes[a].x, nodes[a].y, nodes[b].x, nodes[b].y,
-      glow > 0.05 ? colors.a : colors.link, strength * (0.14 + glow * 0.4));
-  }
-  if (cursor.active) {
-    for (const n of nodes) {
-      const dist = Math.hypot(n.x - cursor.x, n.y - cursor.y);
-      if (dist < CURSOR_RADIUS) line(ctx, n.x, n.y, cursor.x, cursor.y, colors.a, (1 - dist / CURSOR_RADIUS) * 0.28);
-    }
-  }
-
-  for (const s of signals) {
-    const from = nodes[s.from];
-    const to = nodes[s.to];
-    const x = from.x + (to.x - from.x) * s.t;
-    const y = from.y + (to.y - from.y) * s.t;
-    const tail = Math.max(0, s.t - 0.25);
-    const color = colors[s.tone];
-    line(ctx, from.x + (to.x - from.x) * tail, from.y + (to.y - from.y) * tail, x, y, color, 0.55, 1.2);
-    ctx.fillStyle = `rgba(${color}, 0.95)`;
-    ctx.beginPath();
-    ctx.arc(x, y, 1.6, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  for (const n of nodes) {
-    if (n.glow > 0.05) {
-      ctx.fillStyle = `rgba(${colors.a}, ${n.glow * 0.25})`;
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.size + 6 * n.glow, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.fillStyle = `rgba(${colors.node}, ${0.45 + n.glow * 0.5})`;
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.size + n.glow, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
+  for (const lane of lanes) drawLane(ctx, lane, width, colors);
+  for (const p of packets) drawPacket(ctx, p, lanes[p.lane], colors);
+  for (const lane of lanes) for (const stage of lane.stages) drawStage(ctx, stage, lane, colors);
   for (const r of ripples) {
-    ctx.strokeStyle = `rgba(${colors.a}, ${(1 - r.radius / RIPPLE_MAX_RADIUS) * 0.35})`;
+    ctx.strokeStyle = `rgba(${colors.a}, ${(1 - r.radius / RIPPLE_MAX_RADIUS) * 0.3})`;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
     ctx.stroke();
   }
+}
+
+/** Sends a burst of fast packets out from (x, y) along the nearest lanes. */
+function burst(state, x, y, width) {
+  const nearest = state.lanes
+    .map((lane, i) => ({ i, dist: Math.abs(laneY(lane, x) - y) }))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, BURST_LANES);
+  const packets = Array.from({ length: BURST_PACKETS }, (_, k) => createPacket(state.lanes, width, {
+    lane: nearest[k % nearest.length].i,
+    x: x - random(0, 30),
+    speed: BURST_SPEED * random(0.7, 1.2),
+    burst: true,
+  }));
+  return { ...state, packets: [...state.packets, ...packets], ripples: [...state.ripples, { x, y, radius: 0 }] };
 }
 
 export function startBackground(canvas) {
@@ -204,7 +206,7 @@ export function startBackground(canvas) {
   let colors = readColors();
   let width = 0;
   let height = 0;
-  let state = { nodes: [], links: [], signals: [], ripples: [], cursor: { x: 0, y: 0, active: false } };
+  let state = { lanes: [], packets: [], ripples: [], cursor: { x: 0, y: 0, active: false } };
   let frameId = 0;
 
   function resize() {
@@ -214,22 +216,12 @@ export function startBackground(canvas) {
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const nodes = createNodes(width, height);
-    state = { ...state, nodes, links: findNeighbors(nodes), signals: [], ripples: [] };
+    const lanes = createLanes(width, height);
+    state = { ...state, lanes, packets: seedPackets(lanes, width, height), ripples: [] };
   }
 
   function loop() {
-    const ripples = state.ripples
-      .map((r) => ({ ...r, radius: r.radius + RIPPLE_SPEED }))
-      .filter((r) => r.radius < RIPPLE_MAX_RADIUS);
-    const moved = state.nodes.map((n) => stepNode(n, width, height, state.cursor, ripples));
-    const links = findNeighbors(moved);
-    // Signals reference node indices; drop any whose link no longer exists.
-    const linked = new Set(links.map((l) => `${l.a}-${l.b}`));
-    const alive = state.signals.filter((s) => linked.has(`${Math.min(s.from, s.to)}-${Math.max(s.from, s.to)}`));
-    const stepped = stepSignals(alive, moved);
-    const signals = spawnSignals(stepped.nodes, links, state.cursor, stepped.signals);
-    state = { ...state, nodes: stepped.nodes, links, signals, ripples };
+    state = step(state, width, height);
     draw(ctx, width, height, state, colors);
     frameId = requestAnimationFrame(loop);
   }
@@ -257,10 +249,10 @@ export function startBackground(canvas) {
   document.documentElement.addEventListener("pointerleave", () => {
     state = { ...state, cursor: { ...state.cursor, active: false } };
   });
-  // Clicking empty background sends a shockwave through the network.
+  // Clicking empty background sends a burst of packets down the nearest lanes.
   window.addEventListener("pointerdown", (e) => {
-    if (reducedMotion || e.target.closest("a, button, input, textarea, label, .card, .chatbot, .site-header")) return;
-    state = { ...state, ripples: [...state.ripples, { x: e.clientX, y: e.clientY, radius: 0 }] };
+    if (reducedMotion || e.target.closest("a, button, input, textarea, label, .card, .chatbot, .site-header, dialog")) return;
+    state = burst(state, e.clientX, e.clientY, width);
   });
   if (pauseWhileTyping) {
     document.addEventListener("focusin", (e) => {
