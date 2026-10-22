@@ -598,6 +598,15 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 /* Photo: About portrait */
 /* Side by side, the photo and the text card are always the same height: the
    text sets the row height and the photo fills it (cropped from the top). */
+.about-hook {
+  margin: 0 0 2px; font: 800 clamp(1.5rem, 2.8vw, 2.1rem)/1.15 var(--display); letter-spacing: -0.015em; text-wrap: balance;
+  background: linear-gradient(100deg, var(--text), var(--accent) 55%, var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.about-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 6px 0 0; }
+.about-facts div { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); min-width: 0; }
+.about-facts dt { font: 600 0.7rem var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin-bottom: 2px; }
+.about-facts dd { margin: 0; font-size: 0.95rem; color: var(--text); }
+@media (max-width: 520px) { .about-facts { grid-template-columns: 1fr; } }
 .about-grid { display: grid; grid-template-columns: minmax(240px, 0.8fr) 1.6fr; gap: 28px; align-items: stretch; }
 .portrait { position: relative; margin: 0; min-height: 420px; transition: transform 0.2s ease-out; will-change: transform; }
 .portrait-frame {

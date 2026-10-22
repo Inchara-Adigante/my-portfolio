@@ -37,7 +37,9 @@ function renderHero(p) {
 
 function renderAbout(p) {
   document.getElementById("about-body").replaceChildren(
+    el("p", { class: "about-hook" }, p.aboutHook),
     ...p.about.map((para) => el("p", {}, para)),
+    el("dl", { class: "about-facts" }, p.aboutFacts.map((f) => el("div", {}, el("dt", {}, f.label), el("dd", {}, f.value)))),
     p.hobbies.length ? chips(p.hobbies) : "",
   );
 }

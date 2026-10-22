@@ -49,10 +49,18 @@ export const PROFILE = Object.freeze({
   ],
   tagline:
     "I'm an AI/ML and data engineer finishing my MS in Information Systems at Northeastern University. I build LLM agents and the pipelines, warehouses and dashboards that keep them fed with trustworthy data.",
+  // The About card: a one-line hook (from Inchara's GitHub bio), short paragraphs, then quick facts.
+  aboutHook: "Making data move. Making AI think.",
   about: [
-    "I'm Inchara, an AI/ML and data engineer finishing my Master's in Information Systems at Northeastern University. Most recently I was a data engineer co-op at Skyworks Solutions, where I unified manufacturing, sales and SAP data with Python, SQL and Spark, and took a three-hour reporting workflow down to under ten minutes.",
-    "I care about the unglamorous parts: the join nobody profiled, the duplicate records nobody caught, the job nobody questioned. That habit came from two years of production work, first shipping Snowflake ETL at Accenture, where I made 15+ scheduled workflows 45% faster, and before that processing radar test data at Bharat Electronics.",
-    "On the ML side I build systems end to end. My EV reliability platform takes raw fleet data through validated SQL Server tables to Weibull reliability models and a TensorFlow failure predictor. Jobzilla AI, built with two teammates, has a Recruiter, a Career Coach and a Judge debate a candidate's fit using LangGraph. I'm looking for full-time roles in data engineering, ML engineering or analytics from January 2027.",
+    "I'm Inchara, a data and ML engineer who loves the moment a messy dataset turns into something a team can trust. At Skyworks that meant turning a three-hour report into a ten-minute one. At Accenture it meant making 15+ production pipelines 45% faster.",
+    "I care about the unglamorous parts: the join nobody profiled, the duplicate nobody caught, the job nobody questioned. That's usually where the biggest wins are hiding.",
+    "Lately I've been building the ML side too: a TensorFlow model that flags the riskiest 4.6% of EV parts and catches a third of upcoming failures, and Jobzilla AI, where three AI agents debate whether a candidate will get the job.",
+  ],
+  aboutFacts: [
+    { label: "Currently", value: "MS Information Systems, Northeastern" },
+    { label: "Focus", value: "Data engineering + ML" },
+    { label: "Based in", value: "Boston · open to relocation" },
+    { label: "Available", value: "Full-time from January 2027" },
   ],
   hobbies: [],
   // The assistant shares these only when a visitor asks about that exact topic, and never
@@ -276,7 +284,7 @@ export function profileAsText(p = PROFILE) {
     `Graduation: ${p.graduation}. Available to start full-time: ${p.availableFrom}.`,
     `Focus areas: ${p.roles.join(", ")}. Open to AI/ML, data engineering, analytics engineering and data analyst roles.`,
     `Contact: ${contactSummary(p.contact)}`,
-    "", "ABOUT", ...p.about,
+    "", "ABOUT", p.aboutHook, ...p.about,
     ...(p.hobbies.length ? [`Hobbies: ${p.hobbies.join(", ")}`] : []),
     "", "EDUCATION",
     ...p.education.map((e) => `- ${e.degree}, ${e.school} (${e.dates}, ${e.place}). ${e.detail}.${e.coursework.length ? ` Coursework: ${e.coursework.join(", ")}` : ""}`),
