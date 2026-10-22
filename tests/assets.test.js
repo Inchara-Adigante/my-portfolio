@@ -26,8 +26,8 @@ test("every school with a logo points at an existing file", () => {
 test("every contact channel has an icon and a link", async () => {
   const { ICONS, contactChannels } = await import("../js/icons.js");
   const channels = contactChannels(PROFILE.contact);
-  // Channels left null in the profile (phone, Instagram) are skipped.
-  assert.deepEqual(channels.map((c) => c.id), ["email", "linkedin", "github"]);
+  // Channels left null in the profile (Instagram) are skipped.
+  assert.deepEqual(channels.map((c) => c.id), ["email", "phone", "linkedin", "github"]);
   assert.deepEqual(contactChannels({ ...PROFILE.contact, phone: "+1 (617) 555-0100", instagram: "https://www.instagram.com/someone/" }).map((c) => c.id),
     ["email", "phone", "linkedin", "github", "instagram"]);
   for (const c of channels) {

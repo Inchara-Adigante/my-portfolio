@@ -6,8 +6,9 @@ import { PROFILE, profileAsText } from "../js/profile.js";
 test("returns contact details when asked how to reach Inchara", () => {
   const reply = answerLocally("How do I get in touch?");
   assert.match(reply, new RegExp(PROFILE.contact.email.replace(".", "\\.")));
+  assert.match(reply, /Phone: \+1 \(857\) 271-8193/);
   // Channels left out of the profile are not listed.
-  assert.doesNotMatch(reply, /Phone|Instagram/);
+  assert.doesNotMatch(reply, /Instagram/);
 });
 
 test("describes a specific role when the company is named", () => {

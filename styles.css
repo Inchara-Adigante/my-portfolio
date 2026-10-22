@@ -373,8 +373,10 @@ main { counter-reset: section; }
 @keyframes flow { to { background-position: 16px 0; } }
 /* Equal-size project cards: every row is as tall as the tallest card, and the
    stack + actions footer is pinned to the bottom so cards line up. */
-#project-list { grid-auto-rows: 1fr; }
+#project-list { grid-auto-rows: auto; } /* cards in a row still stretch to match each other */
 .card.project { display: flex; flex-direction: column; gap: 14px; }
+.card.project.is-featured { grid-column: 1 / -1; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 45%, color-mix(in srgb, var(--teal) 7%, transparent)), var(--panel); }
+.featured-tag { display: inline-block; margin-bottom: 4px; font: 700 0.66rem var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-accent); padding: 2px 8px; border-radius: 999px; background: linear-gradient(100deg, var(--accent), var(--teal)); }
 .card.project .card-head { min-height: 3.4em; }
 .project-footer { margin-top: auto; display: grid; gap: 14px; }
 .project-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 34px; }

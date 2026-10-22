@@ -71,7 +71,7 @@ export const PROFILE = Object.freeze({
   }),
   contact: Object.freeze({
     email: "adiganteinchara@gmail.com",
-    phone: null,
+    phone: "+1 (857) 271-8193",
     linkedin: "https://www.linkedin.com/in/incharaadigante",
     github: "https://github.com/Inchara-Adigante",
     instagram: null,
@@ -89,7 +89,7 @@ export const PROFILE = Object.freeze({
       place: "Boston, MA",
       gpa: { score: 3.8, max: 4.0 },
       coursework: [
-        "Data Management & Database Design", "Data Science Engineering Methods", "Application Engineering & Development",
+        "Generative AI", "Data Management & Database Design", "Data Science Engineering Methods", "Application Engineering & Development",
         "Program Structures & Algorithms", "Concepts of Object-Oriented Design", "Software Quality Control & Management",
         "Advanced Business Process Engineering",
       ],
@@ -132,10 +132,11 @@ export const PROFILE = Object.freeze({
       keywords: ["skyworks", "co-op", "coop", "sap", "manufacturing", "reconciliation", "current", "latest", "recent"],
       tags: ["Python", "SQL", "Spark", "SAP", "Power BI"],
       points: [
-        "Built Python, SQL and Spark pipelines that unify manufacturing, sales and SAP data into one consistent, reporting-ready dataset for Power BI.",
-        "Cut a recurring reporting workflow from 3+ hours to under 10 minutes by profiling the slowest SQL and simplifying the transformation logic behind it.",
-        "Automated source-to-output reconciliation checks that removed 15+ hours of manual review every week while holding 99% accuracy.",
-        "Replaced scattered Excel trackers with 3 Power BI dashboards that bring 25+ fields into a single view the team checks every day.",
+        "Built Python, SQL and Spark pipelines across manufacturing, sales and SAP data, standardizing 3 source domains into reliable datasets for finance, engineering and operations teams.",
+        "Cut a recurring reporting workflow from 3+ hours to under 10 minutes by profiling SQL bottlenecks, removing unnecessary joins and simplifying transformation logic.",
+        "Automated checks for missing, duplicate and mismatched records, removing 15+ hours of manual review every week while holding 99% accuracy through source-to-output reconciliation.",
+        "Designed 3 Power BI dashboards from Excel tracking data, consolidating 25+ operational fields so teams could compare reporting periods, spot data gaps and track trends.",
+        "Partnered with finance, engineering, operations and analytics teams to define reporting needs, investigate data issues and validate transformation logic before each release.",
       ],
     },
     {
@@ -144,14 +145,13 @@ export const PROFILE = Object.freeze({
       role: "Software Engineer",
       company: "Accenture",
       dates: "Nov 2023 – Jul 2024",
-      place: "Bangalore, India",
+      place: "Bengaluru, India",
       keywords: ["accenture", "etl", "consulting", "data quality"],
       tags: ["Python", "PySpark", "SQL", "Snowflake", "Data Quality"],
       points: [
-        "Developed Python, PySpark, SQL and Snowflake ETL workflows that replaced manual data preparation with reliable, scheduled processing.",
-        "Tuned 15+ scheduled workflows, reducing their combined runtime by 45%.",
-        "Added 20+ data quality checks that catch missing values, schema mismatches and integrity issues before they reach downstream reports.",
-        "Traced failed jobs through each transformation stage and documented the root causes and fixes, so repeat failures were resolved faster.",
+        "Developed Python, PySpark, SQL and Snowflake ETL workflows across 15+ scheduled jobs, standardizing recurring transformations into reusable datasets for reporting and analysis.",
+        "Reduced runtime across 15+ scheduled workflows by 45% by removing repeated transformation steps, simplifying dependencies and tuning SQL processing.",
+        "Implemented 20+ Snowflake data quality checks for missing values, schema mismatches and integrity failures, then traced failed jobs and reran them to verify outputs before release.",
       ],
     },
     {
@@ -164,8 +164,8 @@ export const PROFILE = Object.freeze({
       keywords: ["bharat", "bel", "radar", "defence", "defense", "intern"],
       tags: ["Python", "Pandas", "MySQL", "Power BI"],
       points: [
-        "Cleaned and standardized 12,000+ radar module test records with Python and Pandas and loaded them into a MySQL database for analysis.",
-        "Built Power BI dashboards that track pass rates, calibration failures and defect trends across production batches.",
+        "Processed 12,000+ radar module test records with Python and Pandas, standardizing voltage, signal strength, calibration status and failure codes before loading them into MySQL.",
+        "Built Power BI dashboards across 4 engineering measures (pass rate, calibration failures, defect codes and module trends) that helped engineers prioritize retesting.",
       ],
     },
   ],
@@ -176,6 +176,7 @@ export const PROFILE = Object.freeze({
     {
       id: "ev",
       roles: ["ai", "data", "analytics"],
+      featured: true, // spans the full row at the top of Projects
       name: "EV Reliability Intelligence & Failure Prediction Platform",
       short: "EV Reliability Platform",
       date: "",
@@ -206,11 +207,12 @@ export const PROFILE = Object.freeze({
       stack: ["Streamlit", "FastAPI", "LangGraph", "GPT-4", "Pinecone"],
       tags: ["Python", "LLMs", "RAG", "Agentic AI", "REST APIs", "PostgreSQL", "Redis", "Docker", "Airflow"],
       points: [
-        "Built a LangGraph multi-agent debate in which a Recruiter, a Career Coach and a Judge argue a candidate's fit for a role and return a reasoned verdict.",
-        "Cut a tailored application from about 45 minutes to under 30 seconds with Pinecone semantic matching, résumé tailoring, cover letters and MCP-based GitHub review.",
+        "Architected a 4-agent LangGraph workflow for job analysis, skill matching, résumé generation and review, with Pinecone retrieval and FastAPI endpoints for structured results.",
+        "Evaluated outputs across 3 failure categories (missing context, routing errors and inconsistent responses), then refined retrieval, prompts and handoffs for consistency.",
       ],
       details: [
         "Built with a 3-person team (Hrishi Pal, Inchara Adigante and Sahil Kasliwal).",
+        "To judge fit, a Recruiter, a Career Coach and a Judge debate a candidate against a role and return a reasoned verdict; a tailored application drops from about 45 minutes to under 30 seconds.",
         "The Recruiter agent looks for weaknesses, the Career Coach highlights strengths and transferable skills, and the Judge weighs both sides and issues the verdict. A LangGraph StateGraph orchestrates them.",
         "A Streamlit frontend talks to a FastAPI backend that uses PostgreSQL (SQLAlchemy), Redis caching and Pinecone vector search.",
         "Job data moves through a Bronze-Silver-Gold pipeline; 4 Airflow DAGs run daily and weekly, including daily email notifications, and MCP connectors bring in job-market listings and GitHub context.",
@@ -230,6 +232,23 @@ export const PROFILE = Object.freeze({
           { agent: "Judge", text: "Verdict: apply. Fit 7/10. Strengths: data pipelines and learning speed. Gap: model training. Next step: a cover letter that leads with the pipeline work." },
         ],
       }),
+    },
+    {
+      id: "eeg",
+      roles: ["ai"],
+      name: "Self-Supervised Graph Neural Network for EEG Analysis",
+      short: "EEG Graph Neural Network",
+      date: "",
+      keywords: ["eeg", "seizure", "gnn", "graph neural", "dcrnn", "contrastive", "mne", "self-supervised", "pytorch", "brain"],
+      stack: ["PyTorch", "MNE-Python", "DCRNN", "Contrastive Learning", "Attention"],
+      tags: ["Deep Learning", "Graph Neural Networks", "Model Evaluation"],
+      points: [
+        "Modeled multichannel seizure recordings as graphs in a self-supervised PyTorch pipeline, using DCRNN, contrastive learning and attention across EEG channels.",
+        "Compared learned representations across training runs and graph setups with reproducible preprocessing, to see how temporal connectivity and attention shaped quality.",
+      ],
+      details: [
+        "MNE-Python handles EEG preprocessing; DCRNN captures temporal and spatial relationships between electrodes, and contrastive learning trains without labels.",
+      ],
     },
     {
       id: "orders",
@@ -264,7 +283,7 @@ export const PROFILE = Object.freeze({
   // Posts live at /writing/<slug>/. Empty for now.
   writing: [],
   skills: [
-    { group: "AI / ML", roles: ["ai"], items: ["TensorFlow", "scikit-learn", "SciPy", "Survival Analysis", "LangGraph", "LangChain", "OpenAI API", "RAG", "Pinecone", "MCP", "Multi-Agent Systems"] },
+    { group: "AI / ML", roles: ["ai"], items: ["PyTorch", "TensorFlow", "scikit-learn", "Graph Neural Networks", "SciPy", "Survival Analysis", "LangGraph", "LangChain", "OpenAI API", "RAG", "Pinecone", "MCP", "Multi-Agent Systems"] },
     { group: "Data Engineering", roles: ["data", "analytics"], items: ["Python", "SQL", "Spark / PySpark", "Kafka", "Airflow", "dbt", "Snowflake", "Redshift", "SQL Server", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
     { group: "Cloud / Backend", roles: ["ai", "data"], items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "Azure", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions", "Jenkins"] },
     { group: "Analytics & BI", roles: ["analytics"], items: ["Power BI", "Tableau", "Splunk", "Pandas", "NumPy", "Reliability Analysis", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },

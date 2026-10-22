@@ -58,9 +58,9 @@ function renderExperience(p) {
 
 function renderProjects(p) {
   document.getElementById("project-list").replaceChildren(...p.projects.map((x) =>
-    el("article", { class: "card project reveal", id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
+    el("article", { class: `card project reveal${x.featured ? " is-featured" : ""}`, id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
       el("div", { class: "card-head" },
-        el("div", { class: "project-title" }, projectLogo(x.id, 48), el("h3", {}, x.name)),
+        el("div", { class: "project-title" }, projectLogo(x.id, 48), el("div", {}, x.featured && el("span", { class: "featured-tag" }, "Featured"), el("h3", {}, x.name))),
         x.date && el("span", { class: "meta" }, x.date)),
       bullets(x.points),
       el("div", { class: "project-footer" },
