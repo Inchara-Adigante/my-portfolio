@@ -6,8 +6,7 @@ import { renderExperience } from "./experience.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
-import { initDinoGame } from "./dino/runner.js";
-import { initGameWindow } from "./dino/window.js";
+import { initSortingHat } from "./sorting-hat.js";
 import { initSkillExplorer } from "./skills.js";
 import { initContactForm } from "./contact.js";
 import { renderChrome, initReveal, initAnalytics } from "./chrome.js";
@@ -200,8 +199,12 @@ initCardEffects();
 initScrollUI(document.getElementById("scroll-progress"), nav);
 startBackground(document.getElementById("bg-canvas"));
 const assistant = initChatbot(document.getElementById("chatbot"));
-const dinoStatus = document.getElementById("dino-status");
-initGameWindow(document.querySelector(".game-slot"), initDinoGame(document.getElementById("dino-game"), dinoStatus), dinoStatus);
+// The hat's "Show me the proof" turns on the matching role in the hero switch and scrolls to the work.
+initSortingHat(document.getElementById("sorting-hat"), FOCUS, (role) => {
+  const chip = document.querySelector(`.focus-chip[data-focus="${role}"]`);
+  if (chip && chip.getAttribute("aria-pressed") !== "true") chip.click();
+  document.querySelector(`[data-roles~="${role}"]`)?.closest("section[id]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 initSkillExplorer(document.getElementById("skill-list"), document.getElementById("skill-insight"), PROFILE, assistant);
 initProjectQuestions(document.getElementById("project-list"), assistant);
 initRoleFocus(document.getElementById("hero-roles"), document.getElementById("focus-note"), FOCUS);

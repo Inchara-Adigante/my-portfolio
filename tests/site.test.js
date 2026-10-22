@@ -108,15 +108,14 @@ test("the hero photo is the casual photo", () => {
   assert.doesNotMatch(badge[1], /avatar-flip|inchara-avatar\.webp/);
 });
 
-test("the hero has the pixel runner game in place of the old terminal", () => {
+test("the hero has the sorting hat in place of the old game", async () => {
   const html = readFileSync("index.html", "utf8");
-  const canvas = html.match(/<canvas[^>]*id="dino-game"[^>]*>/);
-  assert.ok(canvas, "game canvas exists");
-  assert.match(canvas[0], /tabindex="0"/, "keyboard players can focus it");
-  assert.match(canvas[0], /aria-label="[^"]*jump[^"]*"/, "its label explains the controls");
-  assert.match(html, /aria-live="polite"[^>]*id="dino-status"|id="dino-status"[^>]*aria-live="polite"/, "game over is announced");
-  assert.doesNotMatch(html, /terminal-body|in the terminal/);
-  assert.ok(!existsSync("js/terminal.js"));
+  assert.match(html, /<aside class="card hat-window" id="sorting-hat"/);
+  assert.doesNotMatch(html, /dino|game-window/);
+  assert.ok(!existsSync("js/dino"));
+  const { NEEDS } = await import("../js/sorting-hat.js");
+  const { FOCUS } = await import("../js/profile.js");
+  for (const need of NEEDS) assert.ok(FOCUS.some((f) => f.id === need.house), `${need.id} sorts into a known role`);
 });
 
 test("certifications have their own section, and clicking a card opens no certificate", () => {
@@ -160,12 +159,3 @@ test("side by side, the About photo and text cards stretch to the same height", 
   assert.match(css, /\.portrait-frame img \{[^}]*object-fit: cover/);
 });
 
-test("the game window's close, minimize and maximize buttons are real, labeled buttons", () => {
-  const html = readFileSync("index.html", "utf8");
-  for (const action of ["close", "minimize", "maximize"]) {
-    assert.match(html, new RegExp(`<button[^>]*class="win-btn[^"]*"[^>]*data-action="${action}"[^>]*aria-label="[^"]+"`), action);
-  }
-  assert.match(html, /<button[^>]*class="game-icon"[^>]*hidden/, "dock icon exists, hidden until minimized");
-  assert.match(html, /class="game-slot"[\s\S]*class="card game-window"[\s\S]*class="game-icon"/, "window and icon share one slot");
-  assert.doesNotMatch(html, /class="window-bar" aria-hidden="true"/, "the title bar isn't hidden from screen readers");
-});

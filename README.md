@@ -4,7 +4,7 @@ Static portfolio (HTML/CSS/vanilla JS modules) with:
 
 - **Skill-constellation background** (`js/background.js`): twinkling stars with each skill group hidden as a constellation; moving the cursor near one reveals its lines and skill names.
 - **Hero effects** (`js/effects.js`): typewriter headline, count-up impact stats, card spotlight and tilt.
-- **Pixel runner game** (`js/dino/`): an original pixel-art dinosaur runner in the hero. Rules in `game.js` (pure, tested), drawing and controls in `runner.js`, art and font in `sprites.js`. It only animates during a run and follows the light/dark theme.
+- **Sorting hat** (`js/sorting-hat.js`): an original wizard-hat drawing in the hero. Visitors pick what their team needs; the hat thinks out loud and sorts Inchara into a role, then highlights the matching work.
 - **Guru, the AI assistant** (`js/chatbot.js`): answers questions about Likhith. Its name and tagline live in `PROFILE.assistant`. It calls `/api/chat` (Claude, grounded in `js/profile.js`) and falls back to an offline keyword engine (`js/local-answers.js`) when the API is unavailable.
 
 - **Pages**: `/` (homepage), `/experience/` (full history), `/writing/` (posts). Header and footer come from `js/chrome.js`; secondary pages boot with `js/page.js`.
