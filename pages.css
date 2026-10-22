@@ -57,7 +57,7 @@
 .takeaways ul { margin: 0; }
 .stat-strip { list-style: none; padding: 0; margin: 8px 0 22px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .stat-strip li { padding: 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); display: grid; gap: 2px; }
-.stat-strip strong { font: 600 1.45rem var(--display); background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.stat-strip strong { font: 700 1.5rem var(--font); background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .stat-strip span { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
 .toc { padding: 14px 18px; margin: 0 0 18px; gap: 6px; }
 .toc-title { margin: 0 !important; font: 500 0.75rem ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted) !important; }

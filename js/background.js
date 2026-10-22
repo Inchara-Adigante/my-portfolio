@@ -1,7 +1,8 @@
 // "Skill constellations" background: a quiet field of twinkling stars with
 // Inchara's skills hidden in it as constellations, one per skill group. Moving
 // the cursor near a constellation draws its lines and fades in the skill
-// names; with no mouse (phones, idle), they reveal themselves one at a time.
+// names; with no mouse (phones, idle), their lines brighten one at a time,
+// without names, so nothing pops up beside the text while someone is reading.
 // Pauses when the tab is hidden; renders one static frame for
 // prefers-reduced-motion. On touch screens it also holds still while you type,
 // so the keyboard stays responsive.
@@ -16,11 +17,11 @@ const STARS_PER_CONSTELLATION = 5;
 const REVEAL_RADIUS = 230;        // px from a constellation's center where it starts to appear
 const REVEAL_EASE = 0.08;
 const IDLE_REVEAL_MS = 4500;      // each constellation's turn when there's no mouse
-const SPREAD_X = 0.2;             // constellation size, as a share of the viewport
-const SPREAD_Y = 0.26;
-// Where each constellation sits, as viewport fractions. Kept toward the edges so
-// the names rarely land under the main text column.
-const CENTERS = [[0.13, 0.28], [0.86, 0.24], [0.88, 0.74], [0.14, 0.76]];
+const SPREAD_X = 0.08;            // constellation size, as a share of the viewport
+const SPREAD_Y = 0.3;
+// Where each constellation sits, as viewport fractions: in the side margins, so
+// the names stay out of the main text column on wide screens.
+const CENTERS = [[0.05, 0.3], [0.93, 0.24], [0.93, 0.74], [0.05, 0.76]];
 const RESIZE_DEBOUNCE_MS = 150;
 const MIN_HEIGHT_CHANGE_PX = 150; // mobile URL bar show/hide is smaller than this
 
@@ -80,12 +81,12 @@ function updateReveals(constellations, cursor, time) {
   for (const [g, c] of constellations.entries()) {
     const target = cursor.active
       ? Math.max(0, 1 - Math.hypot(cursor.x - c.x, cursor.y - c.y) / REVEAL_RADIUS)
-      : g === idle ? idleFade * 0.8 : 0;
+      : g === idle ? idleFade * 0.5 : 0;
     c.reveal += (target - c.reveal) * REVEAL_EASE;
   }
 }
 
-function draw(ctx, width, height, sky, time, colors) {
+function draw(ctx, width, height, sky, time, colors, showNames = false) {
   ctx.clearRect(0, 0, width, height);
   for (const s of sky.stars) {
     dot(ctx, s.x, s.y, s.size, colors.node, 0.16 + 0.14 * Math.sin(time * 0.0012 + s.phase));
@@ -102,12 +103,12 @@ function draw(ctx, width, height, sky, time, colors) {
     for (const p of c.points) {
       if (r > 0.02) dot(ctx, p.x, p.y, 6, colors.a, r * 0.16);
       dot(ctx, p.x, p.y, 1.9, colors.a, 0.3 + r * 0.6);
-      if (r > 0.05) {
+      if (showNames && r > 0.05) {
         ctx.fillStyle = `rgba(${colors.node}, ${r * 0.7})`;
         ctx.fillText(p.name, p.x + 8, p.y - 7);
       }
     }
-    if (r > 0.3) {
+    if (showNames && r > 0.3) {
       ctx.fillStyle = `rgba(${colors.b}, ${(r - 0.3) * 0.8})`;
       ctx.fillText(c.group.toUpperCase(), c.x - ctx.measureText(c.group.toUpperCase()).width / 2, c.y + 4);
     }
@@ -139,7 +140,7 @@ export function startBackground(canvas) {
 
   function loop(time) {
     updateReveals(sky.constellations, cursor, time);
-    draw(ctx, width, height, sky, time, colors);
+    draw(ctx, width, height, sky, time, colors, cursor.active);
     frameId = requestAnimationFrame(loop);
   }
 

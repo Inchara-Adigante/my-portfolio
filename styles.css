@@ -50,8 +50,8 @@
   --diagram-arrow: rgba(236, 236, 241, 0.7);
   --radius: 22px;
   --max: 1160px;
-  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --display: "Outfit", var(--font);
+  --font: "Lato", system-ui, -apple-system, sans-serif;
+  --display: "Raleway", var(--font);
 }
 
 /* Light mode (the switch in the header; see js/theme.js). */
@@ -113,8 +113,8 @@ body {
   overflow-x: hidden;
 }
 a { color: inherit; }
-h1, h2, h3 { font-family: var(--display); line-height: 1.15; margin: 0; }
-h3 { font-size: 1.1rem; font-weight: 600; }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.15; margin: 0; }
+h3 { font-size: 1.1rem; font-weight: 700; }
 p { margin: 0; }
 
 #bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2; }
@@ -184,7 +184,7 @@ main { padding: 0 16px; }
 .pulse::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--teal); animation: pulse 1.8s ease-out infinite; }
 @keyframes pulse { from { transform: scale(0.6); opacity: 0.9; } to { transform: scale(1.8); opacity: 0; } }
 .eyebrow { color: var(--muted); font-size: 1.1rem; margin-bottom: 10px; }
-.hero h1 { font-size: clamp(2.2rem, 4.6vw, 3.8rem); font-weight: 600; letter-spacing: -0.025em; min-height: 2.4em; }
+.hero h1 { font-size: clamp(2.2rem, 4.6vw, 3.8rem); font-weight: 800; letter-spacing: -0.02em; min-height: 2.4em; }
 .gradient-text {
   background: linear-gradient(100deg, var(--text) 0%, var(--accent) 45%, var(--teal) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -262,7 +262,8 @@ html.game-max { overflow: hidden; }
 
 .impact { grid-column: 1 / -1; list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .impact-item { padding: 18px 20px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--panel); display: grid; gap: 4px; }
-.impact-item strong { font: 600 2rem var(--display); background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* Big numbers use Lato: Google's Raleway only ships old-style figures, which dip below the line. */
+.impact-item strong { font: 700 2.1rem var(--font); background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .impact-item span { font-size: 0.82rem; color: var(--muted); }
 
 /* Impact numbers that link to their source, with optional before/after bars (js/interactive.js). */
@@ -612,7 +613,7 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
   padding: 64px 20px 18px; border-radius: 0 0 22px 22px;
   background: linear-gradient(to top, rgba(16, 17, 21, 0.94) 0%, rgba(16, 17, 21, 0.82) 55%, transparent 100%);
 }
-.portrait-caption strong { font: 600 1.05rem var(--display); letter-spacing: -0.01em; color: #ececf1; } /* on the photo's dark scrim in both themes */
+.portrait-caption strong { font: 700 1.05rem var(--display); letter-spacing: -0.01em; color: #ececf1; } /* on the photo's dark scrim in both themes */
 .portrait-role { font-size: 0.82rem; color: #c4c5d1; }
 .portrait-facts { list-style: none; margin: 10px 0 0; padding: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .portrait-facts li { display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; color: #e4e4ec; }
