@@ -88,3 +88,17 @@ test("every job has impact numbers, teams and a summary for its Experience tab",
     assert.ok(x.teams?.length >= 1, `${x.id} teams`);
   }
 });
+
+test("job and project details stay hidden until a card is clicked, then open in a pop-up", () => {
+  const exp = readFileSync("js/experience.js", "utf8");
+  const main = readFileSync("js/main.js", "utf8");
+  for (const src of [exp, main]) {
+    assert.match(src, /detailsDialog\(/);
+    assert.match(src, /"aria-haspopup": "dialog"/);
+  }
+  // The compact cards carry the ids other sections link to; the bullets and demos are built only on click.
+  assert.match(exp, /id: `exp-\$\{x\.id\}`/);
+  assert.match(exp, /card\.addEventListener\("click", \(\) => open\(card, \.\.\.details\(x\)\)\)/);
+  assert.match(main, /if \(!panels\.has\(x\.id\)\) panels\.set\(x\.id, projectPanel\(x\)\)/);
+  assert.doesNotMatch(exp, /role: "tab"/, "the old company tabs are gone");
+});

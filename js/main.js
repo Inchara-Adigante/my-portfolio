@@ -14,6 +14,7 @@ import { initCursor } from "./cursor.js";
 import { ICONS, contactChannels } from "./icons.js";
 import { renderCertifications } from "./certifications.js";
 import { el } from "./dom.js";
+import { detailsDialog } from "./details.js";
 
 const chips = (items) => el("ul", { class: "chips" }, items.map((i) => el("li", {}, i)));
 const bullets = (items) => el("ul", { class: "bullets" }, items.map((i) => el("li", {}, i)));
@@ -45,18 +46,34 @@ function renderAbout(p) {
 }
 
 
+// Each project is a compact card (logo, name, stack); clicking it opens the
+// bullets, the Architecture / Try-it panel and the links in a pop-up.
 function renderProjects(p) {
-  document.getElementById("project-list").replaceChildren(...p.projects.map((x) =>
-    el("article", { class: "card project reveal", id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
-      el("div", { class: "card-head" },
-        el("div", { class: "project-title" }, projectLogo(x.id, 48), el("h3", {}, x.name)),
-        x.date && el("span", { class: "meta" }, x.date)),
-      bullets(x.points),
-      el("div", { class: "project-footer" },
-        projectPanel(x),
+  const list = document.getElementById("project-list");
+  const open = detailsDialog(document.getElementById("projects"), "Project details");
+  const panels = new Map(); // built on first open, so demos don't run for unopened projects
+  list.replaceChildren(...p.projects.map((x) => {
+    const card = el("button", {
+      type: "button", class: "card project project-card reveal", id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" "),
+      "aria-haspopup": "dialog", "aria-label": `${x.name}. Open details.`,
+    },
+      el("span", { class: "project-title" }, projectLogo(x.id, 48), el("span", { class: "project-name" }, x.name)),
+      el("span", { class: "project-stack" }, x.stack.join(" · ")),
+      el("span", { class: "card-more", "aria-hidden": "true" }, "View details →"));
+    card.addEventListener("click", () => {
+      if (!panels.has(x.id)) panels.set(x.id, projectPanel(x));
+      open(card,
+        el("div", { class: "card-head" },
+          el("div", { class: "project-title" }, projectLogo(x.id, 48), el("h3", {}, x.name)),
+          x.date && el("span", { class: "meta" }, x.date)),
+        bullets(x.points),
+        panels.get(x.id),
         el("div", { class: "project-actions" },
           el("button", { type: "button", class: "ask-assistant", "data-ask": `Tell me about ${shortName(x.name)}` }, `✦ Ask ${p.assistant.name} about this`),
-          x.repo && el("a", { class: "link-arrow small", href: x.repo, target: "_blank", rel: "noopener" }, x.repoLabel ?? "Code on GitHub →"))))));
+          x.repo && el("a", { class: "link-arrow small", href: x.repo, target: "_blank", rel: "noopener" }, x.repoLabel ?? "Code on GitHub →")));
+    });
+    return card;
+  }));
 }
 
 /** "FinSight — RBAC RAG Chatbot" -> "FinSight" */
@@ -199,6 +216,6 @@ startBackground(document.getElementById("bg-canvas"));
 const assistant = initChatbot(document.getElementById("chatbot"));
 initOwlLetter(document.getElementById("owl-letter"), LETTER, PROFILE);
 initSkillExplorer(document.getElementById("skill-list"), document.getElementById("skill-insight"), PROFILE, assistant);
-initProjectQuestions(document.getElementById("project-list"), assistant);
+initProjectQuestions(document.getElementById("projects"), assistant);
 initRoleFocus(document.getElementById("hero-roles"), document.getElementById("focus-note"), FOCUS);
-initDebate(document.getElementById("project-list"), PROFILE.projects);
+initDebate(document.getElementById("projects"), PROFILE.projects);

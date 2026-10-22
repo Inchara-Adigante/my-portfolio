@@ -12,8 +12,6 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 /** Scrolls to a card and makes it pulse once so the eye lands on it. */
 export function flashCard(card) {
   if (!card) return;
-  // A card inside a closed tab (Experience) asks its tab list to open it first.
-  if (card.hidden) card.closest("#experience-list")?.dispatchEvent(new CustomEvent("exp:show", { detail: card.id.replace(/^exp-/, "") }));
   card.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "center" });
   card.classList.remove("flash");
   void card.offsetWidth; // restart the animation if it's already running
