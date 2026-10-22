@@ -77,8 +77,7 @@ export const PROFILE = Object.freeze({
     instagram: null,
     resume: "/assets/Inchara_Adigante_Resume.pdf",
   }),
-  // gpa drives the ring chart. courses ({ name, project }) link a course to the project id where it
-  // was applied; the "Where I used it" map only appears once a school has courses listed.
+  // gpa drives the ring chart on each school card.
   education: [
     {
       school: "Northeastern University",
@@ -94,12 +93,6 @@ export const PROFILE = Object.freeze({
         "Program Structures & Algorithms", "Concepts of Object-Oriented Design", "Software Quality Control & Management",
         "Advanced Business Process Engineering",
       ],
-      courses: [
-        { name: "Data Management & Database Design", project: "revenue" },
-        { name: "Data Science Engineering Methods", project: "ev" },
-        { name: "Software Quality Control & Management", project: "ev" },
-        { name: "Application Engineering & Development", project: "jobzilla" },
-      ],
     },
     {
       school: "Atria Institute of Technology",
@@ -114,19 +107,19 @@ export const PROFILE = Object.freeze({
         "Artificial Intelligence & Machine Learning", "Data Structures & Algorithms", "Database Management Systems",
         "Big Data", "Cloud Computing", "Operating Systems", "Computer Networks & Security",
       ],
-      courses: [],
     },
   ],
-  // The education journey map, oldest first. place groups milestones under the India or Boston pin.
+  // The education journey map, oldest first. place groups milestones under the India or Boston pin;
+  // type picks the icon (school, work, move, cert, grad); link is the element a click scrolls to.
   journey: [
-    { date: "2019-07", label: "Jul 2019", title: "Started BE at Atria", detail: "Information Science & Engineering, affiliated with VTU", place: "india" },
-    { date: "2022-06", label: "Jun 2022", title: "Data intern, Bharat Electronics", detail: "12,000+ radar test records into MySQL", place: "india" },
-    { date: "2023-06", label: "Jun 2023", title: "Graduated BE", detail: "GPA 8.7 / 10", place: "india" },
-    { date: "2023-11", label: "Nov 2023", title: "Software Engineer, Accenture", detail: "15+ ETL workflows made 45% faster", place: "india" },
-    { date: "2024-09", label: "Sep 2024", title: "Moved to Boston for my MS", detail: "Information Systems, Northeastern", place: "boston" },
-    { date: "2025-06", label: "Jun 2025", title: "Co-op, Skyworks Solutions", detail: "A 3-hour report cut to 10 minutes", place: "boston" },
-    { date: "2026-07", label: "Jul 2026", title: "AWS Certified Data Engineer", detail: "Associate", place: "boston" },
-    { date: "2026-12", label: "Dec 2026", title: "MS graduation", detail: "GPA 3.8 / 4.0 · ready to start January 2027", place: "boston" },
+    { date: "2019-07", label: "Jul 2019", type: "school", title: "Started BE at Atria", detail: "Information Science & Engineering", place: "india", link: "edu-atria" },
+    { date: "2022-06", label: "Jun 2022", type: "work", title: "Data intern, Bharat Electronics", detail: "12,000+ radar test records into MySQL", place: "india", link: "exp-bel" },
+    { date: "2023-06", label: "Jun 2023", type: "grad", title: "Graduated BE", detail: "GPA 8.7 / 10", place: "india", link: "edu-atria" },
+    { date: "2023-11", label: "Nov 2023", type: "work", title: "Software Engineer, Accenture", detail: "15+ ETL workflows made 45% faster", place: "india", link: "exp-accenture" },
+    { date: "2024-09", label: "Sep 2024", type: "move", title: "Moved to Boston for my MS", detail: "Information Systems, Northeastern", place: "boston", link: "edu-northeastern" },
+    { date: "2025-06", label: "Jun 2025", type: "work", title: "Co-op, Skyworks Solutions", detail: "A 3-hour report cut to 10 minutes", place: "boston", link: "exp-skyworks" },
+    { date: "2026-07", label: "Jul 2026", type: "cert", title: "AWS Certified Data Engineer", detail: "Associate", place: "boston", link: "certifications" },
+    { date: "2026-12", label: "Dec 2026", type: "grad", title: "MS graduation", detail: "GPA 3.8 / 4.0 · ready to start Jan 2027", place: "boston", link: "edu-northeastern" },
   ],
   experience: [
     {
@@ -317,7 +310,7 @@ export function profileAsText(p = PROFILE) {
     "", "ABOUT", p.aboutHook, ...p.about,
     ...(p.hobbies.length ? [`Hobbies: ${p.hobbies.join(", ")}`] : []),
     "", "EDUCATION",
-    ...p.education.map((e) => `- ${e.degree}, ${e.school} (${e.dates}, ${e.place}). ${e.detail}. GPA ${e.gpa.score}/${e.gpa.max.toFixed(1)}.${e.coursework.length ? ` Coursework: ${e.coursework.join(", ")}` : ""}${e.courses.length ? ` Courses applied in projects: ${e.courses.map((c) => `${c.name} (${c.project})`).join(", ")}` : ""}`),
+    ...p.education.map((e) => `- ${e.degree}, ${e.school} (${e.dates}, ${e.place}). ${e.detail}. GPA ${e.gpa.score}/${e.gpa.max.toFixed(1)}.${e.coursework.length ? ` Coursework: ${e.coursework.join(", ")}` : ""}`),
     "", "EXPERIENCE",
     ...p.experience.flatMap((x) => [`- ${x.role} at ${x.company} (${x.dates}, ${x.place})`, ...x.points.map((pt) => `  * ${pt}`)]),
     "", "PROJECTS",

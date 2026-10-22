@@ -62,3 +62,11 @@ test("the journey's Today marker sits between the right stops", async () => {
   assert.equal(todayPosition(stops, new Date(2030, 0, 1)), ((n - 0.5) / n) * 100);
   for (let i = 1; i < n; i++) assert.ok(stops[i].date > stops[i - 1].date, "stops are in date order");
 });
+
+test("the journey countdown names the months left to graduation", async () => {
+  const { countdown } = await import("../js/education.js");
+  assert.equal(countdown(PROFILE.journey, new Date(2026, 9, 22)), "2 months to graduation");
+  assert.equal(countdown(PROFILE.journey, new Date(2026, 10, 2)), "1 month to graduation");
+  assert.equal(countdown(PROFILE.journey, new Date(2027, 2, 1)), null);
+  for (const s of PROFILE.journey) assert.ok(["school", "work", "move", "cert", "grad"].includes(s.type), s.title);
+});
