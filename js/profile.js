@@ -177,7 +177,6 @@ export const PROFILE = Object.freeze({
     {
       id: "ev",
       roles: ["ai", "data", "analytics"],
-      featured: true, // spans the full row at the top of Projects
       name: "EV Reliability Intelligence & Failure Prediction Platform",
       short: "EV Reliability Platform",
       date: "",
@@ -289,6 +288,24 @@ export const PROFILE = Object.freeze({
     { group: "Cloud / Backend", roles: ["ai", "data"], items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "Azure", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions", "Jenkins"] },
     { group: "Analytics & BI", roles: ["analytics"], items: ["Power BI", "Tableau", "Splunk", "Pandas", "NumPy", "Reliability Analysis", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },
   ],
+  // The Skills section shows every skill above as stages of a data pipeline, left to right.
+  // Each item must be a skill name from PROFILE.skills (tests check both directions).
+  stack: [
+    { id: "ingest", title: "Ingest", blurb: "Pull data in from apps, files and streams", roles: ["data"],
+      items: ["Python", "SQL", "Kafka", "REST APIs", "AWS Lambda", "AWS S3"] },
+    { id: "store", title: "Store", blurb: "Warehouses and databases that hold it", roles: ["data", "analytics"],
+      items: ["Snowflake", "Redshift", "SQL Server", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
+    { id: "transform", title: "Transform", blurb: "Clean, model and orchestrate it", roles: ["data", "analytics"],
+      items: ["Spark / PySpark", "AWS Glue", "dbt", "Airflow", "Pandas", "NumPy", "Data Quality", "Dimensional Modeling"] },
+    { id: "model", title: "Model", blurb: "Train and evaluate ML models", roles: ["ai"],
+      items: ["PyTorch", "TensorFlow", "scikit-learn", "Graph Neural Networks", "SciPy", "Survival Analysis", "Reliability Analysis", "A/B Testing"] },
+    { id: "agents", title: "AI agents", blurb: "LLM apps that reason over the data", roles: ["ai"],
+      items: ["LangGraph", "LangChain", "OpenAI API", "RAG", "Pinecone", "MCP", "Multi-Agent Systems"] },
+    { id: "serve", title: "Serve & show", blurb: "APIs, apps and dashboards people use", roles: ["ai", "analytics"],
+      items: ["FastAPI", "Streamlit", "Athena", "Power BI", "Tableau", "Splunk", "SAP"] },
+  ],
+  // Tools that run underneath every stage.
+  foundations: ["Docker", "GitHub Actions", "Jenkins", "CloudWatch", "GCP", "Azure"],
   // group: one of CERT_GROUPS. badge = the issuer's official badge; logo = the issuer's official logo
   // (unchanged, from its own site), used when there is no badge. logoStyle "fill": the file is already a
   // full square tile; "wordmark": a wide logo that needs the whole tile. featured: the short name shown with the

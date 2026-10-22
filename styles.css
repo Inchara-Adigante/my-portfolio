@@ -375,8 +375,8 @@ main { counter-reset: section; }
    stack + actions footer is pinned to the bottom so cards line up. */
 #project-list { grid-auto-rows: auto; } /* cards in a row still stretch to match each other */
 .card.project { display: flex; flex-direction: column; gap: 14px; }
-.card.project.is-featured { grid-column: 1 / -1; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 45%, color-mix(in srgb, var(--teal) 7%, transparent)), var(--panel); }
-.featured-tag { display: inline-block; margin-bottom: 4px; font: 700 0.66rem var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-accent); padding: 2px 8px; border-radius: 999px; background: linear-gradient(100deg, var(--accent), var(--teal)); }
+/* With an odd number of projects, the last card sits centered in its row instead of alone on the left. */
+@media (min-width: 821px) { #project-list > .card.project:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 10px); } }
 .card.project .card-head { min-height: 3.4em; }
 .project-footer { margin-top: auto; display: grid; gap: 14px; }
 .project-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 34px; }
@@ -397,6 +397,53 @@ main { counter-reset: section; }
 #skill-list .chips li { padding: 0; border: 0; background: none; }
 /* Skill usage popover (js/skills.js): sits beside the hovered skill, arrow pointing at it. */
 #skills { position: relative; }
+/* Skills as a pipeline (main.js renderSkills): six stages joined by flowing arrows, then the
+   foundations every stage runs on. Stages stack vertically on narrow screens. */
+.stack { display: grid; gap: 16px; }
+.stack-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px; }
+.stack-stage {
+  position: relative; min-width: 0; display: grid; align-content: start; gap: 12px; padding: 16px 14px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--panel); transition: border-color 0.25s, transform 0.25s, opacity 0.35s, filter 0.35s;
+}
+.stack-stage:hover { border-color: color-mix(in srgb, var(--teal) 45%, transparent); transform: translateY(-3px); }
+/* The arrow between stages: a dashed line with a moving dot, like data flowing to the next step. */
+.stack-stage:not(:last-child)::after {
+  content: ""; position: absolute; top: 34px; right: -21px; width: 20px; height: 2px;
+  background: repeating-linear-gradient(90deg, var(--teal) 0 4px, transparent 4px 7px); background-size: 14px 2px; opacity: 0.7;
+  animation: stack-flow 0.9s linear infinite;
+}
+.stack-stage:not(:last-child)::before {
+  content: ""; position: absolute; top: 30px; right: -23px; width: 0; height: 0; border-left: 6px solid var(--teal); border-top: 5px solid transparent; border-bottom: 5px solid transparent; opacity: 0.8;
+}
+@keyframes stack-flow { to { background-position: 14px 0; } }
+.stage-head { display: grid; gap: 2px; }
+.stage-num { font: 500 0.7rem ui-monospace, Menlo, monospace; color: var(--teal); letter-spacing: 0.1em; }
+.stage-head h3 { font-size: 1.12rem; }
+.stage-head p { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; min-height: 2.8em; }
+.stack-stage .chips { flex-direction: column; align-items: stretch; gap: 6px; }
+.stack .skill-chip { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; }
+.evidence { display: inline-flex; gap: 3px; flex: none; }
+.evidence i { width: 5px; height: 5px; border-radius: 50%; background: var(--border); }
+.evidence i.on { background: var(--accent); }
+.stack-base { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 14px 16px; border-radius: var(--radius); border: 1px dashed var(--border); background: var(--surface); }
+.base-label { font: 600 0.7rem var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.stack-base .chips { gap: 8px; }
+.stack-base .skill-chip { width: auto; }
+@media (max-width: 1100px) {
+  .stack-flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stack-stage:nth-child(3n)::after, .stack-stage:nth-child(3n)::before { display: none; }
+}
+@media (max-width: 640px) {
+  .stack-flow { grid-template-columns: 1fr; gap: 26px; }
+  .stack-stage .chips { flex-direction: row; flex-wrap: wrap; }
+  .stack .stack-stage .skill-chip { width: auto; }
+  .stage-head p { min-height: 0; }
+  .stack-stage:not(:last-child)::after, .stack-stage:nth-child(3n)::after { display: block; top: auto; bottom: -22px; right: auto; left: 30px; width: 2px; height: 18px;
+    background: repeating-linear-gradient(180deg, var(--teal) 0 4px, transparent 4px 7px); background-size: 2px 14px; animation-name: stack-flow-down; }
+  .stack-stage:not(:last-child)::before, .stack-stage:nth-child(3n)::before { display: block; top: auto; bottom: -26px; right: auto; left: 26px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--teal); border-bottom: 0; }
+}
+@keyframes stack-flow-down { to { background-position: 0 14px; } }
+
 /* .card.skill-insight outranks .card's position: relative, so the popover floats instead of pushing the grid. */
 .card.skill-insight {
   position: absolute; z-index: 15; width: min(440px, 100%); margin: 0; padding: 14px 16px; gap: 10px;
@@ -518,7 +565,7 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after { animation: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after, .stack-stage::after { animation: none; }
   .gpa-fill, .trail-path, .trail-flight, .trail-future, .trail-plane, .trail-trailhead, .trail-stop, .trail-stop .stop-icon, .trail-you, .trail-flag { transition: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }
   .theme-toggle span { transition: none; }

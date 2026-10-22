@@ -71,3 +71,10 @@ test("the popover never spills past the section's edges", () => {
   assert.equal(nearRight.left, 600 - 400);
   assert.ok(nearRight.arrowX <= 400 - 16 && nearLeft.arrowX >= 16, "arrow stays on the popover");
 });
+
+test("the pipeline view shows every skill exactly once, and nothing that isn't a skill", () => {
+  const skills = PROFILE.skills.flatMap((s) => s.items);
+  const shown = [...PROFILE.stack.flatMap((s) => s.items), ...PROFILE.foundations];
+  assert.deepEqual([...new Set(skills)].sort(), [...shown].sort(), "same set of skills");
+  assert.equal(new Set(shown).size, shown.length, "no skill appears in two stages");
+});

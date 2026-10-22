@@ -6,7 +6,7 @@ import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
 import { initDinoGame } from "./dino/runner.js";
 import { initGameWindow } from "./dino/window.js";
-import { initSkillExplorer } from "./skills.js";
+import { initSkillExplorer, findSkillUsage } from "./skills.js";
 import { initContactForm } from "./contact.js";
 import { renderChrome, initReveal, initAnalytics } from "./chrome.js";
 import { initCursor } from "./cursor.js";
@@ -58,9 +58,9 @@ function renderExperience(p) {
 
 function renderProjects(p) {
   document.getElementById("project-list").replaceChildren(...p.projects.map((x) =>
-    el("article", { class: `card project reveal${x.featured ? " is-featured" : ""}`, id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
+    el("article", { class: "card project reveal", id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
       el("div", { class: "card-head" },
-        el("div", { class: "project-title" }, projectLogo(x.id, 48), el("div", {}, x.featured && el("span", { class: "featured-tag" }, "Featured"), el("h3", {}, x.name))),
+        el("div", { class: "project-title" }, projectLogo(x.id, 48), el("h3", {}, x.name)),
         x.date && el("span", { class: "meta" }, x.date)),
       bullets(x.points),
       el("div", { class: "project-footer" },
@@ -82,11 +82,33 @@ function initProjectQuestions(list, assistant) {
   });
 }
 
+const MAX_DOTS = 3;
+
+/** A skill chip with evidence dots: one per job or project that used it (3 means 3 or more). */
+function skillChip(p, skill) {
+  const uses = findSkillUsage(p, skill).length;
+  const dots = Math.min(uses, MAX_DOTS);
+  return el("li", {}, el("button", {
+    type: "button", class: "skill-chip", "data-skill": skill, "aria-pressed": "false",
+    title: uses ? `Used in ${uses} job${uses === 1 ? "" : "s"} or project${uses === 1 ? "" : "s"}` : "On the résumé",
+  }, skill, dots > 0 && el("span", { class: "evidence", "aria-hidden": "true" },
+    ...Array.from({ length: MAX_DOTS }, (_, i) => el("i", { class: i < dots ? "on" : "" })))));
+}
+
+/** Skills as the stages of a data pipeline, with the shared foundations underneath. */
 function renderSkills(p) {
-  document.getElementById("skill-list").replaceChildren(...p.skills.map((s) =>
-    el("article", { class: "card reveal", "data-roles": (s.roles ?? []).join(" ") }, el("h3", {}, s.group),
-      el("ul", { class: "chips" }, s.items.map((item) =>
-        el("li", {}, el("button", { type: "button", class: "skill-chip", "data-skill": item, "aria-pressed": "false" }, item)))))));
+  const stages = p.stack.map((stage, i) =>
+    el("li", { class: "stack-stage reveal", "data-roles": stage.roles.join(" "), style: `--i: ${i}` },
+      el("div", { class: "stage-head" },
+        el("span", { class: "stage-num" }, String(i + 1).padStart(2, "0")),
+        el("h3", {}, stage.title),
+        el("p", {}, stage.blurb)),
+      el("ul", { class: "chips" }, stage.items.map((skill) => skillChip(p, skill)))));
+  document.getElementById("skill-list").replaceChildren(
+    el("ol", { class: "stack-flow" }, stages),
+    el("div", { class: "stack-base reveal" },
+      el("span", { class: "base-label" }, "Runs on"),
+      el("ul", { class: "chips" }, p.foundations.map((skill) => skillChip(p, skill)))));
 }
 
 function renderAchievements(p) {
