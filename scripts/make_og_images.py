@@ -68,12 +68,12 @@ def card_svg(kicker: str, title: str, footer: str, avatar: str, logo: str | None
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}" viewBox="0 0 {WIDTH} {HEIGHT}">
   <defs>
     <radialGradient id="glow" cx="0.15" cy="0.1" r="0.9">
-      <stop offset="0" stop-color="#f4a259" stop-opacity="0.22"/><stop offset="0.6" stop-color="#f4a259" stop-opacity="0"/>
+      <stop offset="0" stop-color="#ff9a85" stop-opacity="0.22"/><stop offset="0.6" stop-color="#ff9a85" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="bar" x1="0" x2="1"><stop offset="0" stop-color="#f4a259"/><stop offset="1" stop-color="#9bd4a8"/></linearGradient>
+    <linearGradient id="bar" x1="0" x2="1"><stop offset="0" stop-color="#ff9a85"/><stop offset="1" stop-color="#4fd1c5"/></linearGradient>
     <clipPath id="round"><circle cx="116" cy="526" r="36"/></clipPath>
   </defs>
-  <rect width="{WIDTH}" height="{HEIGHT}" fill="#121915"/>
+  <rect width="{WIDTH}" height="{HEIGHT}" fill="#071a24"/>
   <rect width="{WIDTH}" height="{HEIGHT}" fill="url(#glow)"/>
   <g fill="none" stroke="#aab0c0" stroke-opacity="0.22" stroke-width="1.2">
     <path d="M760 120 860 70 980 140 1100 90M860 70 900 240 1040 300 1150 230M900 240 780 330 860 420"/>
@@ -83,10 +83,10 @@ def card_svg(kicker: str, title: str, footer: str, avatar: str, logo: str | None
     <circle cx="900" cy="240" r="3"/><circle cx="1040" cy="300" r="3"/><circle cx="1150" cy="230" r="3"/><circle cx="780" cy="330" r="3"/><circle cx="860" cy="420" r="3"/>
   </g>
   {logo_tag}
-  <text x="80" y="110" font-family="Menlo, monospace" font-size="24" letter-spacing="3" fill="#9bd4a8">{html.escape(kicker)}</text>
+  <text x="80" y="110" font-family="Menlo, monospace" font-size="24" letter-spacing="3" fill="#4fd1c5">{html.escape(kicker)}</text>
   <text font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="700" font-size="{title_size}" fill="#ececf1">{title_tspans}</text>
   <image href="{avatar}" x="80" y="490" width="72" height="72" clip-path="url(#round)"/>
-  <circle cx="116" cy="526" r="37" fill="none" stroke="#f4a259" stroke-width="2"/>
+  <circle cx="116" cy="526" r="37" fill="none" stroke="#ff9a85" stroke-width="2"/>
   <text x="172" y="518" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="600" font-size="28" fill="#ececf1">{html.escape(NAME)}</text>
   <text x="172" y="552" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" fill="#9a9cab">{html.escape(footer)}</text>
   <rect x="0" y="618" width="{WIDTH}" height="12" fill="url(#bar)"/>

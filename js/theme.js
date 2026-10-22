@@ -10,8 +10,8 @@ export const DEFAULT_THEME = "dark";
 const STORAGE_KEY = "theme";
 // Page background per theme (also the phone's browser-bar color), and the
 // accent colors the transition's pixels flash as they land.
-const BACKGROUNDS = Object.freeze({ dark: "#121915", light: "#f6f4ee" });
-const ACCENTS = Object.freeze({ dark: ["#f4a259", "#9bd4a8"], light: ["#b45309", "#2f7d4f"] });
+const BACKGROUNDS = Object.freeze({ dark: "#071a24", light: "#f2f7f8" });
+const ACCENTS = Object.freeze({ dark: ["#ff9a85", "#4fd1c5"], light: ["#b93a26", "#0f766e"] });
 let switching = false;
 
 /** A saved choice if it's a real theme, otherwise the default. */
