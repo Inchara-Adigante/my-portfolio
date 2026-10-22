@@ -34,7 +34,6 @@
   --strong-hover: #ffffff;
   --success: #86efac;
   --danger: #fca5a5;
-  --cursor-snap: #ffffff;
   /* Window chrome on the hero owl-post card; code blocks in posts stay dark in both themes. */
   --window-bar: rgba(255, 255, 255, 0.03);
   --window-divider: rgba(255, 255, 255, 0.08);
@@ -87,7 +86,6 @@
   --strong-hover: #2a2b33;
   --success: #15803d;
   --danger: #b91c1c;
-  --cursor-snap: #17181d;
   --window-bar: #f1f1f5;
   --window-divider: rgba(24, 26, 45, 0.08);
   --code-bg: #071a24;
@@ -1137,21 +1135,17 @@ button[type="submit"]:disabled { opacity: 0.6; cursor: progress; transform: none
 html.has-custom-cursor, html.has-custom-cursor * { cursor: none; }
 html.has-custom-cursor input:not([type="checkbox"]):not([type="radio"]),
 html.has-custom-cursor textarea, html.has-custom-cursor [contenteditable="true"] { cursor: text; }
-.cursor-dot, .cursor-ring {
-  position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none;
-  opacity: 0; will-change: transform; transition: opacity 0.2s;
-}
-.cursor-dot { width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px rgba(79, 209, 197, 0.9); }
-/* Size and position come from js/cursor.js each frame; only colors transition here. */
-.cursor-ring {
-  border-radius: 50%; border: 1.5px solid rgba(255, 154, 133, 0.75);
-  transition: opacity 0.2s, background 0.2s, border-color 0.2s, border-radius 0.2s;
-}
-html.cursor-visible .cursor-dot, html.cursor-visible .cursor-ring { opacity: 1; }
-html.cursor-snap .cursor-ring { background: rgba(255, 154, 133, 0.12); border-color: rgba(79, 209, 197, 0.85); }
-html.cursor-snap .cursor-dot { background: var(--cursor-snap); box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
-html.cursor-hover .cursor-ring { background: rgba(255, 154, 133, 0.12); border-color: rgba(79, 209, 197, 0.8); }
-html.cursor-text .cursor-dot, html.cursor-text .cursor-ring { opacity: 0; }
+/* Glowing arrow cursor (js/cursor.js): position, tilt and lean come from JS. */
+.cursor-arrow, .cursor-tag { position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none; opacity: 0; will-change: transform; transition: opacity 0.2s; }
+.cursor-arrow { width: 26px; height: 30px; margin: -2px 0 0 -2px; transform-origin: 2px 2px;
+  filter: drop-shadow(0 0 8px rgba(79, 209, 197, 0.55)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)); }
+.cursor-arrow svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.cursor-tag { margin: 28px 0 0 18px; padding: 4px 9px; border-radius: 7px; font: 700 0.72rem var(--font); letter-spacing: 0.01em; white-space: nowrap;
+  color: var(--on-accent); background: var(--accent); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+html.cursor-visible .cursor-arrow, html.cursor-visible.cursor-tagged .cursor-tag { opacity: 1; }
+html.cursor-text .cursor-arrow, html.cursor-text .cursor-tag { opacity: 0; }
+.cursor-ripple { position: fixed; z-index: 9998; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; border: 2px solid var(--accent); pointer-events: none; animation: cursor-ripple 0.55s ease-out forwards; }
+@keyframes cursor-ripple { to { transform: scale(6); opacity: 0; } }
 
 /* Certifications (js/certifications.js): one even grid. Every card is the same
    width, every row is as tall as the tallest card, and every badge or logo

@@ -1,23 +1,44 @@
-// Magnetic cursor: a teal dot tracks the pointer exactly, and a violet ring
-// trails behind it. Over small clickable things (buttons, nav links, tabs,
-// logos, chips) the ring snaps around the element's outline, matching its
-// shape and leaning a little toward the pointer; over large targets (project
-// cards) it just grows. Text fields keep the native text cursor. Mouse and
-// trackpad only, never on touch screens.
+// Glowing arrow cursor: a real arrow pointer in the site's teal-to-coral
+// gradient with a soft glow, so it is always easy to find. It tilts a little
+// with sideways movement. Over something clickable it leans in and a small
+// coral tag says what a click will do ("View details", "Ask Ada"); a click
+// taps the arrow down and sends out a coral ripple. Text fields keep the
+// native text cursor. Mouse and trackpad only, never on touch screens.
 
 import { TEXT_FIELD } from "./text-fields.js";
 
-const EASE = 0.22;            // fraction of the remaining distance covered per frame
-const PULL = 0.15;            // how far a snapped ring leans toward the pointer
-const SNAP_PADDING = 8;       // px of breathing room around a snapped element
-const SNAP_MAX = { width: 360, height: 140 }; // bigger targets grow instead of snapping
-const IDLE_SIZE = 34;
-const GROW_SIZE = 56;
-const PRESS_SCALE = 0.9;
-const CLICKABLE = "a, button, [role='button'], summary, label, select, .skill-chip, .chat-chip, .card.project, .portrait";
+const CLICKABLE = "a, button, [role='button'], summary, label, select, .skill-chip, .chat-chip, .owl-envelope";
+const MAX_TILT_DEG = 12;
+const LEAN_DEG = -10;
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 const canUseCustomCursor = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// What a click does, for the tag beside the arrow. The first matching rule wins;
+// an element can also say it itself with data-cursor-label.
+const LABELS = [
+  [".details-close, .debate-close, .owl-close, .owl-fold, .chat-close", () => "Close"],
+  [".owl-envelope, .owl-seal", () => "Break the seal"],
+  [".exp-card, .project-card", () => "View details"],
+  ["[data-demo]", () => "Play the debate"],
+  ["[data-ask], [data-open-chat], .chat-launcher", () => "Ask Ada"],
+  [".focus-chip", () => "Highlight matching work"],
+  [".skill-chip", () => "See where it's used"],
+  [".impact .is-link", () => "See where it came from"],
+  [".theme-toggle", () => "Switch theme"],
+  ["a[href^='mailto:']", () => "Send an email"],
+  ["a[href$='.pdf']", () => "Open résumé"],
+  ["a[href*='github.com']", () => "Open GitHub"],
+  ["a[href*='linkedin.com']", () => "Open LinkedIn"],
+  ["a[href^='#'], a[href^='/']", (el) => (el.textContent.trim().length <= 14 ? `Go to ${el.textContent.trim()}` : "Open")],
+  ["a[target='_blank']", () => "Open in new tab"],
+];
+export function cursorLabel(el) {
+  if (el.dataset.cursorLabel) return el.dataset.cursorLabel;
+  const rule = LABELS.find(([selector]) => el.matches(selector));
+  return rule ? rule[1](el) : "";
+}
 
 function makeLayer(className) {
   const node = document.createElement("div");
@@ -27,95 +48,82 @@ function makeLayer(className) {
   return node;
 }
 
-const isSnappable = (rect) => rect.width <= SNAP_MAX.width && rect.height <= SNAP_MAX.height;
-
-/** Corner radius for the ring: the element's own radius plus the padding, or a circle. */
-function ringRadius(el) {
-  const radius = getComputedStyle(el).borderTopLeftRadius;
-  if (radius.endsWith("%")) return "50%";
-  const px = Number.parseFloat(radius) || 0;
-  return `${px + SNAP_PADDING}px`;
-}
-
-/** Where the ring should be this frame: around the snapped element, or a circle at the pointer. */
-function ringTarget(pointer, snapEl, growing) {
-  if (snapEl) {
-    const r = snapEl.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    return {
-      x: cx + (pointer.x - cx) * PULL,
-      y: cy + (pointer.y - cy) * PULL,
-      w: r.width + SNAP_PADDING * 2,
-      h: r.height + SNAP_PADDING * 2,
-    };
-  }
-  const size = growing ? GROW_SIZE : IDLE_SIZE;
-  return { x: pointer.x, y: pointer.y, w: size, h: size };
+function arrowShape() {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 26 30");
+  svg.innerHTML = `<defs><linearGradient id="cursor-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fd1c5"/><stop offset="1" stop-color="#ff9a85"/></linearGradient></defs>
+    <path d="M2 2 L2 24 L8 18.5 L12.5 28 L16.5 26.2 L12 17 L20 17 Z" fill="url(#cursor-grad)" stroke="#071a24" stroke-width="1.6" stroke-linejoin="round"/>`;
+  return svg;
 }
 
 export function initCursor() {
-  if (!canUseCustomCursor() || document.querySelector(".cursor-dot")) return;
+  if (!canUseCustomCursor() || document.querySelector(".cursor-arrow")) return;
   const root = document.documentElement;
-  const dot = makeLayer("cursor-dot");
-  const ring = makeLayer("cursor-ring");
+  const arrow = makeLayer("cursor-arrow");
+  arrow.append(arrowShape());
+  const tag = makeLayer("cursor-tag");
+  let host = document.body;
   // A modal dialog sits in the browser's top layer, above everything in the page,
   // so the cursor moves into the topmost open one and back to the body when it closes.
   const followTopLayer = () => {
-    const host = [...document.querySelectorAll("dialog[open]")].filter((d) => d.matches(":modal")).at(-1) ?? document.body;
-    if (dot.parentNode !== host) host.append(dot, ring);
+    host = [...document.querySelectorAll("dialog[open]")].filter((d) => d.matches(":modal")).at(-1) ?? document.body;
+    if (arrow.parentNode !== host) host.append(arrow, tag);
   };
   new MutationObserver(followTopLayer).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["open"] });
+
   const animate = !prefersReducedMotion();
   let pointer = { x: -100, y: -100 };
-  let ringBox = { x: -100, y: -100, w: IDLE_SIZE, h: IDLE_SIZE };
-  let snapEl = null;
-  let growing = false;
+  let tilt = 0;
+  let target = null;
   let pressed = false;
   let frame = 0;
 
   function draw() {
-    const scale = pressed ? PRESS_SCALE : 1;
-    dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0)`;
-    ring.style.width = `${ringBox.w}px`;
-    ring.style.height = `${ringBox.h}px`;
-    ring.style.transform = `translate3d(${ringBox.x - ringBox.w / 2}px, ${ringBox.y - ringBox.h / 2}px, 0) scale(${scale})`;
+    const lean = target ? LEAN_DEG : 0;
+    const scale = pressed ? 0.85 : target ? 1.08 : 1;
+    arrow.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) rotate(${tilt + lean}deg) scale(${scale})`;
+    tag.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0)`;
   }
-
+  // The tilt eases back to upright once the pointer stops moving sideways.
   function tick() {
-    const target = ringTarget(pointer, snapEl, growing);
-    const next = animate
-      ? Object.fromEntries(Object.entries(ringBox).map(([k, v]) => [k, v + (target[k] - v) * EASE]))
-      : target;
-    const settled = Object.keys(next).every((k) => Math.abs(target[k] - next[k]) < 0.1);
-    ringBox = settled ? target : next;
+    tilt *= 0.85;
     draw();
-    // Keep running while snapped, since the element can move (scrolling, hover lift).
-    frame = settled && !snapEl ? 0 : requestAnimationFrame(tick);
+    frame = Math.abs(tilt) > 0.1 ? requestAnimationFrame(tick) : 0;
   }
-  const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
 
   window.addEventListener("pointermove", (e) => {
     if (e.pointerType !== "mouse") return;
+    if (animate) tilt = Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, tilt * 0.6 + e.movementX * 0.8));
     pointer = { x: e.clientX, y: e.clientY };
     root.classList.add("cursor-visible");
-    wake();
+    draw();
+    if (!frame) frame = requestAnimationFrame(tick);
   }, { passive: true });
 
   document.addEventListener("pointerover", (e) => {
     const el = e.target instanceof Element ? e.target : null;
     const overText = Boolean(el?.closest(TEXT_FIELD));
-    const target = overText ? null : el?.closest(CLICKABLE);
-    const snap = target && isSnappable(target.getBoundingClientRect()) ? target : null;
-    snapEl = snap;
-    growing = Boolean(target) && !snap;
-    ring.style.borderRadius = snap ? ringRadius(snap) : "50%";
+    target = overText ? null : el?.closest(CLICKABLE) ?? null;
+    const label = target ? cursorLabel(target) : "";
+    tag.textContent = label;
     root.classList.toggle("cursor-text", overText);
-    root.classList.toggle("cursor-snap", Boolean(snap));
-    root.classList.toggle("cursor-hover", growing);
-    wake();
+    root.classList.toggle("cursor-hover", Boolean(target));
+    root.classList.toggle("cursor-tagged", Boolean(label));
+    draw();
   });
-  window.addEventListener("pointerdown", () => { pressed = true; draw(); });
+  window.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse") return;
+    pressed = true;
+    draw();
+    if (!animate) return;
+    const ripple = document.createElement("span");
+    ripple.className = "cursor-ripple";
+    ripple.setAttribute("aria-hidden", "true");
+    ripple.style.left = `${e.clientX}px`;
+    ripple.style.top = `${e.clientY}px`;
+    host.append(ripple);
+    ripple.addEventListener("animationend", () => ripple.remove());
+  });
   window.addEventListener("pointerup", () => { pressed = false; draw(); });
   root.addEventListener("pointerleave", () => root.classList.remove("cursor-visible"));
   window.addEventListener("blur", () => root.classList.remove("cursor-visible"));

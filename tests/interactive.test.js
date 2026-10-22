@@ -109,3 +109,17 @@ test("the custom cursor follows open pop-ups into the top layer, so it stays vis
   assert.match(cursor, /:modal/);
   assert.match(cursor, /attributeFilter: \["open"\]/);
 });
+
+test("the arrow cursor's tag names what a click does", async () => {
+  const { cursorLabel } = await import("../js/cursor.js");
+  // A stand-in element: matches() checks a selector list against a few known selectors.
+  const fake = (matching, text = "", data = {}) => ({ dataset: data, textContent: text,
+    matches: (sel) => sel.split(",").some((s) => matching.includes(s.trim())) });
+  assert.equal(cursorLabel(fake([".exp-card"])), "View details");
+  assert.equal(cursorLabel(fake(["[data-ask]"])), "Ask Ada");
+  assert.equal(cursorLabel(fake([".details-close"])), "Close");
+  assert.equal(cursorLabel(fake(["a[href$='.pdf']"])), "Open résumé");
+  assert.equal(cursorLabel(fake(["a[href^='#']"], "Projects")), "Go to Projects");
+  assert.equal(cursorLabel(fake([], "", { cursorLabel: "Custom" })), "Custom");
+  assert.equal(cursorLabel(fake([])), "");
+});
