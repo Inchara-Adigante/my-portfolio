@@ -397,6 +397,98 @@ main { counter-reset: section; }
 #skill-list .chips li { padding: 0; border: 0; background: none; }
 /* Skill usage popover (js/skills.js): sits beside the hovered skill, arrow pointing at it. */
 #skills { position: relative; }
+/* Project panels (js/project-panels.js): Architecture and Try it tabs. */
+.project-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
+.panel-tabs { display: flex; gap: 4px; padding: 6px; border-bottom: 1px solid var(--border); }
+.panel-tabs button { font: 600 0.8rem var(--font); color: var(--muted); background: none; border: 0; padding: 6px 12px; border-radius: 10px; cursor: pointer; }
+.panel-tabs button[aria-selected="true"] { color: var(--text); background: var(--surface-strong); }
+.panel-tabs button:focus-visible { outline: 2px solid var(--teal); outline-offset: 1px; }
+.panel-view { padding: 14px; min-height: 120px; }
+.panel-view[hidden] { display: none; }
+
+/* Architecture: nodes joined by links with three packets each, moving only while in view. */
+.arch { list-style: none; margin: 0; padding: 8px 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 18px; }
+.arch-node { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel); font: 500 0.78rem ui-monospace, Menlo, monospace; color: var(--text-2); margin-right: 34px; }
+.arch-node.row-end .arch-link { display: none; }
+.arch-node:last-child { margin-right: 0; border-color: color-mix(in srgb, var(--teal) 45%, transparent); }
+.arch-step { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; font: 700 0.62rem var(--font); color: var(--on-accent); background: linear-gradient(135deg, var(--accent), var(--teal)); }
+.arch-link { position: absolute; left: 100%; top: 50%; width: 34px; height: 2px; background: color-mix(in srgb, var(--teal) 30%, transparent); overflow: visible; }
+.arch-link i { position: absolute; top: -2px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 6px var(--teal); opacity: 0;
+  animation: packet 1.8s linear infinite paused; animation-delay: calc(var(--i) * 0.25s); }
+.arch-link i:nth-child(2) { animation-delay: calc(var(--i) * 0.25s + 0.6s); }
+.arch-link i:nth-child(3) { animation-delay: calc(var(--i) * 0.25s + 1.2s); }
+.project-panel.in-view .arch-link i { animation-play-state: running; }
+@keyframes packet { 0% { left: -2px; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 4px); opacity: 0; } }
+
+/* Shared demo bits. */
+.demo { display: grid; gap: 10px; }
+.demo-title { margin: 0; font: 600 0.72rem var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); }
+.demo-readout { margin: 0; font-size: 0.86rem; color: var(--text-2); min-height: 1.4em; }
+.demo-note { margin: 0; font-size: 0.74rem; color: var(--muted); }
+.demo-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+
+/* EV: reliability bars and the climate toggle. */
+.ev-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.ev-bars li { display: grid; grid-template-columns: 112px minmax(0, 1fr) 42px; align-items: center; gap: 8px; font-size: 0.78rem; padding: 2px 4px; border-radius: 6px; cursor: default; }
+.ev-bars li:hover, .ev-bars li:focus-visible { background: var(--surface-strong); outline: none; }
+.ev-part { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-track { height: 8px; border-radius: 4px; background: var(--surface-strong); overflow: hidden; }
+.ev-track i { display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--teal); transform-origin: left; animation: grow 0.9s ease-out both; }
+.ev-rate { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.pattern-wear-out .ev-track i, .ev-legend .pattern-wear-out::before { background: var(--accent); }
+.pattern-random .ev-track i, .ev-legend .pattern-random::before { background: var(--teal); }
+.pattern-infant .ev-track i, .ev-legend .pattern-infant::before { background: #c4b5fd; }
+.ev-legend { margin: 0; display: flex; gap: 14px; font-size: 0.72rem; color: var(--muted); }
+.ev-legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
+.ev-climate { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; padding-top: 8px; border-top: 1px solid var(--border); }
+.ev-climate-text { grid-column: 1 / -1; font-size: 0.82rem; color: var(--text-2); }
+.ev-climate-bar { height: 10px; border-radius: 5px; background: var(--surface-strong); overflow: hidden; }
+.ev-climate-bar i { display: block; height: 100%; width: var(--w, 20%); background: var(--teal); border-radius: inherit; transition: width 0.6s ease, background 0.6s; }
+.ev-climate-bar.is-hot i { background: var(--accent); }
+.ev-toggle { font: 600 0.76rem var(--font); color: var(--text); background: var(--surface-strong); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+
+/* Jobzilla: the three agents. */
+.jz-cast { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.jz-cast li { display: grid; gap: 2px; padding: 10px; border-radius: 12px; border: 1px solid currentColor; background: var(--panel); }
+.jz-cast strong { font-size: 0.85rem; }
+.jz-cast span { font-size: 0.76rem; color: var(--muted); }
+.jobzilla-demo .btn { justify-self: start; }
+
+/* EEG canvas. */
+.eeg-canvas { width: 100%; height: auto; aspect-ratio: 560 / 200; border-radius: 10px; background: var(--panel); }
+
+/* Orders: packets crossing the four stages, live counters and regions. */
+.orders-lane { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 14px 0; }
+.orders-stage { position: relative; z-index: 1; text-align: center; font: 500 0.76rem ui-monospace, Menlo, monospace; padding: 6px 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); }
+.order-dot { position: absolute; top: 50%; left: 0; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); animation: order-run 2.6s linear forwards; z-index: 2; }
+.order-dot.is-failed { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation-name: order-fail; }
+@keyframes order-run { from { left: 0; } to { left: calc(100% - 8px); } }
+@keyframes order-fail { 0% { left: 0; } 60% { left: 55%; opacity: 1; } 100% { left: 58%; opacity: 0; transform: translateY(14px); } }
+.orders-stats { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.orders-stats div { padding: 8px 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--border); min-width: 0; }
+.orders-stats dt { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.orders-stats dd { margin: 0; font: 700 1rem var(--font); font-variant-numeric: tabular-nums; }
+.orders-regions { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.orders-regions li { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 8px; font-size: 0.76rem; color: var(--muted); }
+.region-track { height: 6px; border-radius: 3px; background: var(--surface-strong); overflow: hidden; }
+.region-track i { display: block; height: 100%; width: var(--w, 0%); background: var(--teal); transition: width 0.4s; }
+
+/* Revenue: star schema. */
+.star-svg { width: 100%; height: auto; }
+.star-link { stroke: var(--border); stroke-width: 2; transition: stroke 0.2s; }
+.star-link.is-on { stroke: var(--accent); stroke-width: 2.5; }
+.star-fact rect { fill: color-mix(in srgb, var(--accent) 18%, var(--panel)); stroke: var(--accent); }
+.star-dim rect { fill: var(--panel); stroke: var(--border); transition: stroke 0.2s; }
+.star-dim { cursor: pointer; outline: none; }
+.star-dim.is-on rect, .star-dim:focus-visible rect { stroke: var(--teal); }
+.star-svg text { font: 500 12px ui-monospace, Menlo, monospace; fill: var(--text); }
+
+@media (max-width: 520px) {
+  .jz-cast { grid-template-columns: 1fr; }
+  .ev-bars li { grid-template-columns: 92px minmax(0, 1fr) 38px; }
+}
+
 /* Skills as a pipeline (main.js renderSkills): six stages joined by flowing arrows, then the
    foundations every stage runs on. Stages stack vertically on narrow screens. */
 .stack { display: grid; gap: 16px; }
@@ -565,7 +657,8 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after, .stack-stage::after { animation: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after, .stack-stage::after, .arch-link i, .ev-track i, .order-dot { animation: none; }
+  .arch-link i { opacity: 1; left: 40%; }
   .gpa-fill, .trail-path, .trail-flight, .trail-future, .trail-plane, .trail-trailhead, .trail-stop, .trail-stop .stop-icon, .trail-you, .trail-flag { transition: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }
   .theme-toggle span { transition: none; }

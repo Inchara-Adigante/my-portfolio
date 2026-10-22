@@ -1,6 +1,7 @@
 import { PROFILE, FOCUS } from "./profile.js";
 import { initRoleFocus, enhanceImpact, initDebate } from "./interactive.js";
 import { renderEducation } from "./education.js";
+import { projectPanel } from "./project-panels.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
@@ -64,9 +65,8 @@ function renderProjects(p) {
         x.date && el("span", { class: "meta" }, x.date)),
       bullets(x.points),
       el("div", { class: "project-footer" },
-        pipeline(x.stack),
+        projectPanel(x),
         el("div", { class: "project-actions" },
-          x.demo && el("button", { type: "button", class: "ask-guru demo-btn", "data-demo": x.id }, "▶ Watch the agents debate"),
           el("button", { type: "button", class: "ask-guru", "data-ask": `Tell me about ${shortName(x.name)}` }, `✦ Ask ${p.assistant.name} about this`),
           x.repo && el("a", { class: "link-arrow small", href: x.repo, target: "_blank", rel: "noopener" }, x.repoLabel ?? "Code on GitHub →"))))));
 }

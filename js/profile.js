@@ -183,6 +183,21 @@ export const PROFILE = Object.freeze({
       repo: "https://github.com/Inchara-Adigante/ev-reliability-platform",
       keywords: ["ev", "electric vehicle", "reliability", "weibull", "failure", "mtbf", "fleet", "prediction", "tensorflow", "sql server", "splunk", "survival", "predictive maintenance"],
       stack: ["Python", "SQL Server", "SciPy Weibull", "TensorFlow", "Power BI"],
+      // From the project README (seed 42): failures per 100 unit-years, MTBF in years, Weibull pattern.
+      reliability: [
+        { part: "12V Battery", rate: 19.57, mtbf: 5.1, pattern: "wear-out" },
+        { part: "Onboard Charger", rate: 4.84, mtbf: 20.7, pattern: "wear-out" },
+        { part: "BMS", rate: 4.8, mtbf: 20.9, pattern: "random" },
+        { part: "Thermal Mgmt", rate: 4.29, mtbf: 23.3, pattern: "wear-out" },
+        { part: "Inverter", rate: 4.23, mtbf: 23.6, pattern: "wear-out" },
+        { part: "HV Contactor", rate: 3.04, mtbf: 32.9, pattern: "infant" },
+        { part: "Battery Pack", rate: 3.0, mtbf: 33.3, pattern: "wear-out" },
+        { part: "Drive Motor", rate: 1.39, mtbf: 72.0, pattern: "wear-out" },
+      ],
+      climate: [
+        { label: "Moderate climate, medium fast-charging", rate: 2.0 },
+        { label: "Hot climate, heavy fast-charging", rate: 9.9 },
+      ],
       tags: ["Pandas", "scikit-learn", "Splunk", "Docker", "pytest", "Reliability Analysis", "Survival Analysis"],
       points: [
         "Built a Python pipeline that validates, cleans and loads service data for a simulated 2,000-vehicle EV fleet into SQL Server, logging every run and rejected record.",
