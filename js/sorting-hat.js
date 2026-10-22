@@ -1,9 +1,8 @@
-// The hero's Sorting Hat: a visitor says what their team needs most, the hat
-// wobbles and thinks out loud, then sorts Inchara into the matching "house"
+// The hero's sorting ceremony: a visitor says what their team needs most, a
+// professor places the hat on Inchara (her photo, on a stool under floating
+// candles), the hat thinks out loud, then sorts her into the matching "house"
 // (one of the FOCUS roles) and offers to highlight the work that proves it.
-// An owl perched on spellbooks keeps it company.
-// The hat is an original drawing (an old, patched wizard hat whose folds form a
-// face) and its lines are original, not book quotes.
+// The hat, the professor and every line are original, not from the books or films.
 
 import { el } from "./dom.js";
 
@@ -25,7 +24,7 @@ const THOUGHTS = Object.freeze({
 });
 
 const HAT = `
-<svg viewBox="0 0 260 240" class="hat-svg" aria-hidden="true">
+<svg x="0" y="0" width="100" height="92.3" viewBox="0 0 260 240" overflow="visible" class="hat-svg">
   <defs>
     <linearGradient id="hat-cloth" x1="0.15" y1="0" x2="0.85" y2="1">
       <stop offset="0" stop-color="#9a7a55"/><stop offset="0.45" stop-color="#6e5136"/><stop offset="1" stop-color="#3f2c1c"/>
@@ -89,95 +88,114 @@ const HAT = `
   </g>
 </svg>`;
 
-// The hat's companion: an owl on a stack of spellbooks.
-const OWL = `
-<svg viewBox="0 0 120 150" class="owl-svg" aria-hidden="true">
+const candle = (x, y, i) => `
+  <g class="candle" style="--i: ${i}" transform="translate(${x} ${y})">
+    <circle class="candle-glow" cx="4" cy="-6" r="14" fill="url(#candle-glow)"/>
+    <path class="candle-flame" d="M4 -12 C7 -7 8 -3 4 0 C0 -3 1 -7 4 -12 Z" fill="#ffd27a"/>
+    <rect x="0" y="0" width="8" height="26" rx="2" fill="#f3e6c8"/>
+    <path d="M1 0 C2 4 2 7 1 10" stroke="#e2d1ac" stroke-width="1.5" fill="none"/>
+  </g>`;
+
+const star = (x, y, s = 1) => `<path d="M${x} ${y - 4 * s} L${x + s} ${y - s} L${x + 4 * s} ${y} L${x + s} ${y + s} L${x} ${y + 4 * s} L${x - s} ${y + s} L${x - 4 * s} ${y} L${x - s} ${y - s} Z" fill="#e7c46a"/>`;
+
+/** The whole scene: candles, the professor, Inchara on her stool, and the hat. */
+function scene(photo) {
+  return `
+<svg viewBox="0 0 360 290" class="scene-svg" role="img" aria-label="A professor holds the sorting hat over Inchara, who sits on a stool under floating candles">
   <defs>
-    <linearGradient id="owl-feather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a88a66"/><stop offset="1" stop-color="#6b5139"/></linearGradient>
-    <linearGradient id="owl-wing" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8c6f50"/><stop offset="1" stop-color="#4f3b29"/></linearGradient>
-    <radialGradient id="owl-eye" cx="0.45" cy="0.4" r="0.6"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#e09a2c"/></radialGradient>
+    <radialGradient id="candle-glow"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.55"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="prof-robe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b3f86"/><stop offset="1" stop-color="#3f2252"/></linearGradient>
+    <linearGradient id="scarf" x1="0" x2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--teal)"/></linearGradient>
+    <clipPath id="student-face"><circle cx="235" cy="140" r="30"/></clipPath>
   </defs>
-  <!-- Spellbooks to perch on. -->
-  <g class="owl-books">
-    <rect x="18" y="128" width="84" height="14" rx="2" fill="#7a2f2a"/><rect x="18" y="128" width="84" height="3" fill="#a24a3f"/>
-    <rect x="96" y="128" width="6" height="14" fill="#e3c58e"/>
-    <rect x="26" y="116" width="70" height="12" rx="2" fill="#2f4a5c"/><rect x="26" y="116" width="70" height="3" fill="#466a80"/>
-    <rect x="90" y="116" width="6" height="12" fill="#e3c58e"/>
-    <path d="M40 142 L40 147 L44 145 L48 147 L48 142" fill="#e2b04a"/>
+  ${candle(36, 34, 0)}${candle(118, 18, 1)}${candle(196, 30, 2)}${candle(282, 14, 3)}${candle(330, 44, 4)}
+  <ellipse cx="180" cy="283" rx="160" ry="6" fill="rgba(0,0,0,0.25)"/>
+  <!-- Stool and student -->
+  <g class="stool">
+    <path d="M205 232 L197 282 M265 232 L273 282 M235 236 L235 282" stroke="#4a321f" stroke-width="6" stroke-linecap="round"/>
+    <ellipse cx="235" cy="230" rx="38" ry="7" fill="#7a5434"/><ellipse cx="235" cy="228" rx="34" ry="4" fill="#8f6640"/>
   </g>
-  <g class="owl">
-    <g class="owl-wing owl-wing-l"><path d="M30 64 C16 76 14 98 24 116 C30 106 34 90 36 74 Z" fill="url(#owl-wing)"/></g>
-    <g class="owl-wing owl-wing-r"><path d="M90 64 C104 76 106 98 96 116 C90 106 86 90 84 74 Z" fill="url(#owl-wing)"/></g>
-    <ellipse cx="60" cy="88" rx="32" ry="32" fill="url(#owl-feather)"/>
-    <ellipse cx="60" cy="96" rx="21" ry="22" fill="#e7d4b4"/>
-    <g fill="none" stroke="#a88a66" stroke-width="1.6" stroke-linecap="round">
-      <path d="M50 92 l3 3 3-3"/><path d="M62 92 l3 3 3-3"/><path d="M56 100 l3 3 3-3"/><path d="M48 104 l3 3 3-3"/><path d="M64 104 l3 3 3-3"/><path d="M56 110 l3 3 3-3"/>
-    </g>
-    <path d="M48 116 l-3 6 M52 117 l0 6 M68 117 l0 6 M72 116 l3 6" stroke="#e2a03a" stroke-width="2.5" stroke-linecap="round"/>
-    <g class="owl-head">
-      <path d="M32 40 L38 22 L46 36 Z" fill="#7a5d41"/><path d="M88 40 L82 22 L74 36 Z" fill="#7a5d41"/>
-      <ellipse cx="60" cy="48" rx="30" ry="24" fill="url(#owl-feather)"/>
-      <circle cx="47" cy="48" r="13" fill="#ead9bb"/><circle cx="73" cy="48" r="13" fill="#ead9bb"/>
-      <g class="owl-eyes">
-        <circle cx="47" cy="48" r="8.5" fill="url(#owl-eye)"/><circle cx="73" cy="48" r="8.5" fill="url(#owl-eye)"/>
-        <circle class="owl-pupil" cx="48" cy="48" r="4.2" fill="#1a120b"/><circle class="owl-pupil" cx="74" cy="48" r="4.2" fill="#1a120b"/>
-        <circle cx="50" cy="46" r="1.4" fill="#fff"/><circle cx="76" cy="46" r="1.4" fill="#fff"/>
-      </g>
-      <path d="M56 56 L64 56 L60 64 Z" fill="#e2a03a"/>
-      <path d="M36 38 C42 34 50 34 54 38" fill="none" stroke="#5a4330" stroke-width="2" stroke-linecap="round"/>
-      <path d="M84 38 C78 34 70 34 66 38" fill="none" stroke="#5a4330" stroke-width="2" stroke-linecap="round"/>
+  <g class="student">
+    <path d="M200 228 C202 196 208 176 218 168 C226 162 244 162 252 168 C262 176 268 196 270 228 Z" fill="#1c1d26"/>
+    <path d="M218 166 C228 174 242 174 252 166 L253 175 C242 183 228 183 217 175 Z" fill="url(#scarf)"/>
+    <path d="M244 176 L250 204 L242 205 L238 178 Z" fill="url(#scarf)"/>
+    <image href="${photo}" x="205" y="110" width="60" height="60" clip-path="url(#student-face)" preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="235" cy="140" r="30" fill="none" stroke="#1c1d26" stroke-width="2.5"/>
+  </g>
+  <!-- The professor (an original character) -->
+  <g class="prof">
+    <path d="M70 172 L60 226" stroke="#4f2d64" stroke-width="12" stroke-linecap="round"/><circle cx="60" cy="229" r="5.5" fill="#f1c7a3"/>
+    <path d="M52 282 C56 230 62 190 68 168 C72 158 88 158 92 168 C98 190 104 230 108 282 Z" fill="url(#prof-robe)"/>
+    ${star(66, 212)}${star(93, 236, 0.8)}${star(74, 262, 0.9)}${star(97, 200, 0.7)}${star(62, 246, 0.6)}
+    <path d="M72 166 L80 184 L88 166" fill="none" stroke="#e7c46a" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="80" cy="146" r="15" fill="#f1c7a3"/>
+    <path d="M64 147 C61 131 71 124 80 124 C90 124 99 131 96 147 C94 140 90 136 86 138 C82 134 76 134 72 138 C68 136 66 140 64 147 Z" fill="#a5482a"/>
+    <circle cx="64" cy="149" r="4" fill="#a5482a"/><circle cx="96" cy="149" r="4" fill="#a5482a"/>
+    <g class="prof-eyes"><circle cx="75" cy="147" r="1.7" fill="#3a2a1e"/><circle cx="85" cy="147" r="1.7" fill="#3a2a1e"/></g>
+    <circle cx="71.5" cy="152" r="2.6" fill="#f29a8a" opacity="0.6"/><circle cx="88.5" cy="152" r="2.6" fill="#f29a8a" opacity="0.6"/>
+    <path d="M75 154 Q80 158 85 154" fill="none" stroke="#7a3b2a" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M66 127 C72 112 78 100 88 88 C89 95 92 104 95 127 Z" fill="#1f2a4d"/>
+    <ellipse cx="80" cy="128" rx="23" ry="4.5" fill="#1f2a4d"/>
+    <path d="M67 122 C76 124 86 124 94 122 L94.5 126 C86 128 76 128 67 126 Z" fill="#e7c46a"/>
+    <g class="prof-arm">
+      <path d="M92 170 L178 170" stroke="#5a3473" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="182" cy="170" r="6" fill="#f1c7a3"/>
     </g>
   </g>
-</svg>
-`;
+  <g class="scene-hat"><g class="hat-wobbler">${HAT.slice(HAT.indexOf("<svg"), HAT.lastIndexOf("</svg>") + 6)}</g></g>
+</svg>`;
+}
 
 /**
- * Builds the hat into `slot`. `focus` is PROFILE.focus-style [{ id, label, pitch }];
- * `onSorted(houseId)` lets the page highlight matching work.
+ * Builds the ceremony into `slot`. `focus` is [{ id, label, pitch }];
+ * `photo` is Inchara's portrait; `onSorted(houseId)` lets the page highlight matching work.
  */
-export function initSortingHat(slot, focus, onSorted) {
+export function initSortingHat(slot, focus, onSorted, photo = "/assets/inchara-casual.webp") {
   if (!slot) return;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const stage = el("div", { class: "hat-stage" });
-  stage.innerHTML = HAT;
-  const owl = el("div", { class: "owl-stage", title: "Hoo!" });
-  owl.innerHTML = OWL;
+  stage.innerHTML = scene(photo);
   const sparkles = el("div", { class: "hat-sparkles", "aria-hidden": "true" }, Array.from({ length: 10 }, (_, i) => el("i", { style: `--i: ${i}` })));
-  const speech = el("p", { class: "hat-speech", "aria-live": "polite" }, "Ah, a visitor! Tell me what your team needs, and I shall sort Inchara where she belongs.");
+  const speech = el("p", { class: "hat-speech", "aria-live": "polite" }, "Welcome! Tell me what your team needs, and the hat will sort Inchara where she belongs.");
   const choices = el("div", { class: "hat-choices", role: "group", "aria-label": "What does your team need most?" },
     NEEDS.map((n) => el("button", { type: "button", class: "hat-choice", "data-need": n.id }, n.label)));
   const result = el("div", { class: "hat-result", hidden: "" });
   let timers = [];
   const clear = () => { timers.forEach(clearTimeout); timers = []; };
+  const states = ["is-placing", "is-thinking", "is-sorted"];
+  const setState = (s) => { slot.classList.remove(...states); if (s) slot.classList.add(s); };
 
   function reset() {
     clear();
-    slot.classList.remove("is-thinking", "is-sorted");
+    setState(null);
     result.hidden = true;
     choices.hidden = false;
-    speech.textContent = "Back for another sorting? What does your team need most?";
+    speech.textContent = "The hat goes back to the professor. What does your team need most?";
   }
 
   function sort(need) {
     clear();
     const house = focus.find((f) => f.id === need.house);
     choices.hidden = true;
-    slot.classList.add("is-thinking");
-    const lines = THOUGHTS[house.id];
+    const place = reduce ? 0 : 1300;
     const step = reduce ? 0 : THINK_MS;
-    lines.forEach((line, i) => timers.push(setTimeout(() => { speech.textContent = line; }, i * step)));
+    setState("is-placing");
+    speech.textContent = "The professor places the hat on Inchara's head…";
     timers.push(setTimeout(() => {
-      slot.classList.remove("is-thinking");
-      slot.classList.add("is-sorted");
-      speech.textContent = "I have decided…";
-      result.replaceChildren(
-        el("p", { class: "hat-house" }, house.label.toUpperCase() + "!"),
-        el("p", { class: "hat-pitch" }, house.pitch),
-        el("div", { class: "hat-actions" },
-          el("button", { type: "button", class: "btn btn-light small", "data-proof": house.id }, "Show me the proof ↓"),
-          el("button", { type: "button", class: "btn btn-ghost small hat-again" }, "Sort again")));
-      result.hidden = false;
-    }, lines.length * step));
+      setState("is-thinking");
+      THOUGHTS[house.id].forEach((line, i) => timers.push(setTimeout(() => { speech.textContent = line; }, i * step)));
+      timers.push(setTimeout(() => {
+        setState("is-sorted");
+        speech.textContent = "I have decided…";
+        result.replaceChildren(
+          el("p", { class: "hat-house" }, house.label.toUpperCase() + "!"),
+          el("p", { class: "hat-pitch" }, house.pitch),
+          el("div", { class: "hat-actions" },
+            el("button", { type: "button", class: "btn btn-light small", "data-proof": house.id }, "Show me the proof ↓"),
+            el("button", { type: "button", class: "btn btn-ghost small hat-again" }, "Sort again")));
+        result.hidden = false;
+      }, THOUGHTS[house.id].length * step));
+    }, place));
   }
 
   choices.addEventListener("click", (e) => {
@@ -189,19 +207,15 @@ export function initSortingHat(slot, focus, onSorted) {
     const proof = e.target.closest("[data-proof]");
     if (proof) onSorted?.(proof.dataset.proof);
   });
-  // Poke the owl and it hops and flaps.
-  owl.addEventListener("click", () => {
-    owl.classList.remove("hop"); void owl.offsetWidth; owl.classList.add("hop");
-  });
   // Poke the hat for a little wobble.
-  stage.addEventListener("click", () => {
-    if (slot.classList.contains("is-thinking")) return;
+  stage.addEventListener("click", (e) => {
+    if (!e.target.closest(".scene-hat") || slot.classList.contains("is-thinking")) return;
     stage.classList.remove("poke"); void stage.offsetWidth; stage.classList.add("poke");
   });
 
   slot.replaceChildren(
     el("div", { class: "window-bar" },
       el("span", { class: "window-dots", "aria-hidden": "true" }, el("i"), el("i"), el("i")),
-      el("em", {}, "the sorting hat")),
-    el("div", { class: "hat-body" }, el("div", { class: "hat-visual" }, owl, el("div", { class: "hat-spot" }, sparkles, stage)), speech, choices, result));
+      el("em", {}, "the sorting ceremony")),
+    el("div", { class: "hat-body" }, el("div", { class: "hat-visual" }, stage, sparkles), speech, choices, result));
 }
