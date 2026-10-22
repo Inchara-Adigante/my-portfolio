@@ -55,9 +55,10 @@ test("the journey's Today marker sits between the right stops", async () => {
   const { todayPosition } = await import("../js/education.js");
   const stops = PROFILE.journey;
   const n = stops.length;
-  // Oct 2026 falls between the AWS certification (Jul 2026, stop 7) and graduation (Dec 2026, stop 8).
+  // Oct 2026 falls between the AWS certification (Jul 2026) and graduation (Dec 2026).
+  const aws = stops.findIndex((s) => s.type === "cert");
   const pos = todayPosition(stops, new Date(2026, 9, 22));
-  assert.ok(pos > (6.5 / n) * 100 && pos < (7.5 / n) * 100, `got ${pos}`);
+  assert.ok(pos > ((aws + 0.5) / n) * 100 && pos < ((aws + 1.5) / n) * 100, `got ${pos}`);
   assert.equal(todayPosition(stops, new Date(2018, 0, 1)), (0.5 / n) * 100);
   assert.equal(todayPosition(stops, new Date(2030, 0, 1)), ((n - 0.5) / n) * 100);
   for (let i = 1; i < n; i++) assert.ok(stops[i].date > stops[i - 1].date, "stops are in date order");
@@ -68,5 +69,14 @@ test("the journey countdown names the months left to graduation", async () => {
   assert.equal(countdown(PROFILE.journey, new Date(2026, 9, 22)), "2 months to graduation");
   assert.equal(countdown(PROFILE.journey, new Date(2026, 10, 2)), "1 month to graduation");
   assert.equal(countdown(PROFILE.journey, new Date(2027, 2, 1)), null);
-  for (const s of PROFILE.journey) assert.ok(["school", "work", "move", "cert", "grad"].includes(s.type), s.title);
+  for (const s of PROFILE.journey) assert.ok(["school", "work", "move", "cert", "grad", "pub"].includes(s.type), s.title);
+});
+
+test("the publication card has its facts, a working link target, and a trail stop", () => {
+  const [paper] = PROFILE.publications;
+  assert.equal(paper.authors.at(-1), paper.me);
+  assert.match(paper.url, /^https:\/\/www\.ijnrd\.org\/papers\/IJNRD2304172\.pdf$/);
+  assert.ok(paper.stats.some((s) => s.value === "83.33%"));
+  assert.ok(PROFILE.journey.some((s) => s.type === "pub" && s.link === `pub-${paper.id}`));
+  assert.match(readFileSync("index.html", "utf8"), /<section id="publications" class="section">/);
 });

@@ -114,6 +114,7 @@ export const PROFILE = Object.freeze({
   journey: [
     { date: "2019-07", label: "Jul 2019", type: "school", title: "Started BE at Atria", detail: "Information Science & Engineering", place: "india", link: "edu-atria" },
     { date: "2022-06", label: "Jun 2022", type: "work", title: "Data intern, Bharat Electronics", detail: "12,000+ radar test records into MySQL", place: "india", link: "exp-bel" },
+    { date: "2023-04", label: "Apr 2023", type: "pub", title: "Published research", detail: "ML diabetes prediction, 83.33% accuracy", place: "india", link: "pub-diabetes" },
     { date: "2023-06", label: "Jun 2023", type: "grad", title: "Graduated BE", detail: "GPA 8.7 / 10", place: "india", link: "edu-atria" },
     { date: "2023-11", label: "Nov 2023", type: "work", title: "Software Engineer, Accenture", detail: "15+ ETL workflows made 45% faster", place: "india", link: "exp-accenture" },
     { date: "2024-09", label: "Sep 2024", type: "move", title: "Moved to Boston for my MS", detail: "Information Systems, Northeastern", place: "boston", link: "edu-northeastern" },
@@ -296,7 +297,30 @@ export const PROFILE = Object.freeze({
     { group: "certification", name: "AWS Certified Data Engineer – Associate", issuer: "Amazon Web Services", date: "Jul 2026",
       badge: "/assets/certs/aws-dea-badge.webp", featured: "AWS Data Engineer – Associate" },
   ],
-  publication: "",
+  // Rendered in the Publications section and known to the assistant. me = the author name to bold.
+  publications: [
+    {
+      id: "diabetes",
+      title: "Prediction of Diabetes Through Medical Dataset Using ML",
+      authors: ["Omprakash B", "Ayush Kumar", "Harshitha V", "Inchara A"],
+      me: "Inchara A",
+      affiliation: "Atria Institute of Technology",
+      venue: "International Journal of Novel Research and Development (IJNRD)",
+      venueShort: "IJNRD",
+      volume: "8", issue: "4", pages: "b504–b510", date: "Apr 2023", year: "2023",
+      url: "https://www.ijnrd.org/papers/IJNRD2304172.pdf",
+      summary: "Undergraduate research on predicting diabetes from patient records. A hybrid model combining logistic regression and an artificial neural network, with feature selection to keep only the most useful attributes, classifies patients as diabetic or not; a Tkinter app makes predictions for new patients.",
+      stats: [
+        { value: "83.33%", label: "best classification accuracy (ANN, 75/25 split)" },
+        { value: "4 of 8", label: "attributes needed after threshold-based feature selection" },
+      ],
+      details: [
+        "Uses the Pima Indians Diabetes dataset from the UCI repository; feature subsets came from entropy, mean and threshold evaluation methods.",
+        "The 4-attribute subset beat the full attribute set, and models were compared with cross-validation and percentage splits.",
+      ],
+      keywords: ["publication", "paper", "research", "published", "diabetes", "ijnrd", "journal", "pima"],
+    },
+  ],
   achievements: [],
 });
 
@@ -340,7 +364,9 @@ export function profileAsText(p = PROFILE) {
     "", "SKILLS", ...p.skills.map((s) => `- ${s.group}: ${s.items.join(", ")}`),
     "", "CERTIFICATIONS, COURSES AND VOLUNTEERING",
     ...CERT_GROUPS.flatMap((g) => p.certifications.filter((c) => c.group === g.id).map((c) => `- ${g.title}: ${certLabel(c)}${c.detail ? `. ${c.detail}` : ""}`)),
-    ...(p.publication ? ["", `PUBLICATION: ${p.publication}`] : []),
+    ...(p.publications.length ? ["", "PUBLICATIONS", ...p.publications.flatMap((x) => [
+      `- "${x.title}", ${x.authors.join(", ")} (${x.affiliation}). ${x.venue}, Vol. ${x.volume}, Issue ${x.issue}, pp. ${x.pages}, ${x.date}. ${x.url}`,
+      `  * ${x.summary}`, ...x.stats.map((s) => `  * ${s.value} ${s.label}`), ...x.details.map((d) => `  * ${d}`)])] : []),
     ...(p.achievements.length ? ["", "ACHIEVEMENTS", ...p.achievements.map((a) => `- ${a.title}, ${a.where} (${a.year}): ${a.detail}`)] : []),
     ...(p.writing.length ? ["", "WRITING (blog posts on this site, under /writing/)", ...p.writing.map((w) => `- "${w.title}": ${w.summary}`)] : []),
     "", "ONLY WHEN ASKED (share each item only if the visitor asks about that exact topic; never mention it otherwise)",

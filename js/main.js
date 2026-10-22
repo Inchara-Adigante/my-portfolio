@@ -91,7 +91,7 @@ function renderSkills(p) {
 
 function renderAchievements(p) {
   // Hide the whole section until there is something to show.
-  if (!p.achievements.length && !p.publication) {
+  if (!p.achievements.length) {
     document.getElementById("achievements")?.remove();
     return;
   }
@@ -100,7 +100,49 @@ function renderAchievements(p) {
       el("div", { class: "card-head" }, el("h3", {}, a.title), el("span", { class: "meta" }, a.year)),
       el("p", { class: "accent small" }, a.where),
       el("p", { class: "small" }, a.detail))));
-  document.getElementById("publication").textContent = p.publication;
+}
+
+/** "Omprakash B, Ayush Kumar, Harshitha V and Inchara A" with Inchara's name in bold. */
+function authorLine(x) {
+  const names = x.authors.map((a) => (a === x.me ? el("strong", {}, a) : a));
+  return names.flatMap((n, i) => (i === 0 ? [n] : [i === names.length - 1 ? " and " : ", ", n]));
+}
+
+/** APA-style citation for the "Copy citation" button. */
+const citation = (x) => `${x.authors.join(", ")} (${x.year}). ${x.title}. ${x.venue}, ${x.volume}(${x.issue}), ${x.pages}. ${x.url}`;
+
+function renderPublications(p, getAssistant) {
+  const list = document.getElementById("publication-list");
+  if (!p.publications.length) {
+    document.getElementById("publications")?.remove();
+    return;
+  }
+  list.replaceChildren(...p.publications.map((x) =>
+    el("article", { class: "card pub reveal", id: `pub-${x.id}` },
+      el("div", { class: "pub-main" },
+        el("p", { class: "pub-kicker" }, el("span", { class: "pub-tag" }, "Research paper"), `${x.venueShort} · Vol. ${x.volume}, Issue ${x.issue} · ${x.date}`),
+        el("h3", {}, x.title),
+        el("p", { class: "pub-authors" }, ...authorLine(x), el("span", { class: "muted" }, ` · ${x.affiliation}`)),
+        el("p", { class: "pub-summary" }, x.summary),
+        el("div", { class: "pub-actions" },
+          el("a", { class: "btn btn-light small", href: x.url, target: "_blank", rel: "noopener" }, "Read paper ↗"),
+          el("button", { type: "button", class: "btn btn-ghost small", "data-cite": x.id }, "Copy citation"),
+          el("button", { type: "button", class: "ask-guru", "data-ask": `Tell me about the ${x.venueShort} paper` }, `✦ Ask ${p.assistant.name} about this`))),
+      el("dl", { class: "pub-stats" }, x.stats.map((s) => el("div", {}, el("dt", {}, s.value), el("dd", {}, s.label)))))));
+  list.addEventListener("click", async (e) => {
+    const ask = e.target.closest("[data-ask]");
+    if (ask) return getAssistant()?.ask(ask.dataset.ask);
+    const cite = e.target.closest("[data-cite]");
+    if (!cite) return;
+    const x = p.publications.find((y) => y.id === cite.dataset.cite);
+    try {
+      await navigator.clipboard.writeText(citation(x));
+      cite.textContent = "Copied ✓";
+    } catch {
+      cite.textContent = "Copy failed";
+    }
+    setTimeout(() => { cite.textContent = "Copy citation"; }, 2000);
+  });
 }
 
 /** An icon element from the shared, static SVG set. */
@@ -142,6 +184,8 @@ renderProjects(PROFILE);
 renderSkills(PROFILE);
 renderAchievements(PROFILE);
 renderCertifications(document.getElementById("cert-list"), PROFILE.certifications);
+// Rendered before initReveal so the card fades in; the assistant is looked up when a button is clicked.
+renderPublications(PROFILE, () => assistant);
 renderContact(PROFILE);
 const nav = renderChrome({ onHome: true });
 initAnalytics();

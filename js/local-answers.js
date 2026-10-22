@@ -76,9 +76,11 @@ function buildIntents(p) {
     { keys: ["aws", "cloud", "certif", "certificate", "badge", "badges", "credential", "credentials",
       "courses", "online course", "volunteer"],
       answer: () => describeCertifications(p.certifications) },
-    { keys: ["achieve", "award", "prize", "won", "hackathon", "workshop", "mentor", "publication", "paper", "research"],
+    ...p.publications.map((x) => ({ keys: x.keywords, weight: 2, answer: () =>
+      `${me} co-authored "${x.title}" (${x.venueShort}, Vol. ${x.volume}, Issue ${x.issue}, ${x.date}) with ${x.authors.filter((a) => a !== x.me).join(", ")} at ${x.affiliation}.\n${x.summary}\n${list(x.stats.map((s) => `${s.value} ${s.label}`))}\nRead it: ${x.url}` })),
+    { keys: ["achieve", "award", "prize", "won", "hackathon", "workshop", "mentor"],
       answer: () => p.achievements.length
-        ? `${list(p.achievements.map((a) => `${a.title} (${a.year})`))}${p.publication ? `\n\nPublication: ${p.publication}` : ""}`
+        ? `${list(p.achievements.map((a) => `${a.title} (${a.year})`))}`
         : `I don't have awards listed for ${me} yet. The strongest results are in the experience section: for example, a reporting workflow cut from 3+ hours to under 10 minutes at Skyworks.` },
     { weight: 1.5, keys: ["hobby", "hobbies", "free time", "fun", "sport", "travel", "outside work", "interests"],
       answer: () => p.hobbies.length

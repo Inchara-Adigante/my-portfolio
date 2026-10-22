@@ -23,6 +23,7 @@ const ICONS = {
   grad: stroke('<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/>'),
   work: stroke('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>'),
   move: stroke('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+  pub: stroke('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'),
   cert: stroke('<circle cx="12" cy="9" r="6"/><path d="m9 14.5-1.5 7.5 4.5-2.5 4.5 2.5-1.5-7.5"/>'),
 };
 
@@ -69,13 +70,17 @@ const LOW_Y = 300;
 const HIGH_Y = 172;
 const FLAG = { x: 990, y: 290 };
 
-/** Trail points: India stops spread over the left, Boston stops over the right, alternating low and high. */
+/**
+ * Trail points: India stops spread over the left, Boston stops over the right, alternating low
+ * and high so neighbouring cards sit on opposite sides. The last stop is always high, which leaves
+ * room under it for the summit flag.
+ */
 export function trailPoints(stops) {
   const firstBoston = stops.findIndex((s) => s.place === "boston");
   const india = firstBoston < 0 ? stops.length : firstBoston;
   const spread = (count, from, to) => Array.from({ length: count }, (_, i) => (count === 1 ? from : from + ((to - from) * i) / (count - 1)));
   const xs = [...spread(india, 60, 390), ...spread(stops.length - india, 600, 905)];
-  return xs.map((x, i) => ({ x, y: i % 2 ? HIGH_Y : LOW_Y }));
+  return xs.map((x, i) => ({ x, y: (xs.length - 1 - i) % 2 ? LOW_Y : HIGH_Y }));
 }
 
 /** Catmull-Rom spline through points, as cubic Bézier segments [p0, c1, c2, p1]. */
@@ -155,7 +160,8 @@ function trailMap(stops) {
   return el("div", { class: "trail-map" },
     map,
     el("span", { class: "trail-plane", style: pct(flightMid), "aria-hidden": "true" }, icon("move", "plane-icon"), el("small", {}, "≈ 13,500 km")),
-    el("span", { class: "trail-trailhead", style: pct({ x: pts[0].x, y: pts[0].y - 44 }), "aria-hidden": "true" }, "Trailhead"),
+    // The trailhead label goes on the side of the first stop that its card doesn't use.
+    el("span", { class: "trail-trailhead", style: pct({ x: pts[0].x, y: pts[0].y === HIGH_Y ? pts[0].y + 26 : pts[0].y - 44 }), "aria-hidden": "true" }, "Trailhead"),
     el("ol", { class: "trail-stops" }, stops.map((s, i) =>
       el("li", { class: `trail-stop is-${s.place} ${pts[i].y === HIGH_Y ? "is-above" : "is-below"}`, style: `${pct(pts[i])}; --i: ${i}` },
         el("button", { type: "button", class: "stop", "data-link": s.link ?? "", "aria-label": `${s.label}: ${s.title}. ${s.detail}` },

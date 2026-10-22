@@ -263,6 +263,16 @@
       ]
     },
     {
+      "id": "f31",
+      "category": "fact",
+      "question": "Has Inchara published any research?",
+      "mustInclude": [
+        "Prediction of Diabetes",
+        "IJNRD",
+        "83.33%"
+      ]
+    },
+    {
       "id": "u01",
       "category": "unknown",
       "question": "Is Inchara married?",
