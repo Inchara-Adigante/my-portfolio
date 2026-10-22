@@ -25,6 +25,7 @@ function buildIntents(p) {
   ].filter(Boolean).join("\n");
   const skillsIn = (group) => p.skills.find((s) => s.group === group)?.items.join(", ") ?? "";
   const ask = p.askOnly;
+  const gpaText = (e) => `${e.gpa.score}/${e.gpa.max === 10 ? "10" : e.gpa.max.toFixed(1)}`;
   return [
     { keys: ["hi", "hello", "hey", "yo", "sup", "good morning", "good evening"], weight: 0.5,
       answer: () => `Hi! I'm ${p.assistant.name}, ${me}'s portfolio assistant. Ask me about ${me}'s experience, projects, skills, education, or how to get in touch.` },
@@ -51,9 +52,9 @@ function buildIntents(p) {
         ? `${me} is currently on an ${ask.visa.now} and will be on ${ask.visa.next} from ${ask.visa.from}. For sponsorship questions beyond that, email ${c.email}.`
         : `I don't have details on ${me}'s work authorization. Please ask directly at ${c.email}.` },
     { weight: 3, keys: ["gpa", "cgpa", "grade", "grades", "marks", "academic score"],
-      answer: () => `GPA:\n${list(ask.gpa.map((g) => `${g.school} (${g.degree}): ${g.score}`))}` },
+      answer: () => `GPA:\n${list(p.education.map((e) => `${e.school}: ${gpaText(e)}`))}` },
     { weight: 1.5, keys: ["educat", "degree", "study", "studying", "university", "college", "master", "bachelor", "northeastern", "school", "course"],
-      answer: () => p.education.map((e) => `${e.degree} — ${e.school} (${e.dates})${e.coursework.length ? `\nCoursework includes ${e.coursework.slice(0, 5).join(", ")}.` : ""}`).join("\n\n") },
+      answer: () => p.education.map((e) => `${e.degree} — ${e.school} (${e.dates}), GPA ${gpaText(e)}${e.coursework.length ? `\nCoursework includes ${e.coursework.slice(0, 5).join(", ")}.` : ""}`).join("\n\n") },
     { keys: ["experience", "work", "job", "intern", "internship", "career", "company", "companies", "worked"],
       answer: () => `${me} has ${p.experience.length} roles:\n${list(p.experience.map((x) => `${x.role}, ${x.company} (${x.dates})`))}\n\nAsk about any of them for details.` },
     ...p.experience.map((x) => ({ keys: x.keywords, weight: 2, answer: () => describeJob(x) })),

@@ -1,5 +1,6 @@
 import { PROFILE, FOCUS } from "./profile.js";
 import { initRoleFocus, enhanceImpact, initDebate } from "./interactive.js";
+import { renderEducation } from "./education.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
@@ -42,18 +43,6 @@ function renderAbout(p) {
     el("dl", { class: "about-facts" }, p.aboutFacts.map((f) => el("div", {}, el("dt", {}, f.label), el("dd", {}, f.value)))),
     p.hobbies.length ? chips(p.hobbies) : "",
   );
-}
-
-function renderEducation(p) {
-  document.getElementById("education-list").replaceChildren(...p.education.map((e) =>
-    el("article", { class: "card reveal" },
-      el("div", { class: "card-head" },
-        el("div", { class: "school-title" },
-          e.logo && el("img", { class: "school-logo", src: e.logo, alt: "", width: "56", height: "56", loading: "lazy" }),
-          el("div", {}, el("h3", {}, e.school), el("p", { class: "muted" }, e.degree))),
-        el("div", { class: "meta" }, el("span", {}, e.dates), el("span", {}, e.place))),
-      el("p", { class: "small" }, e.detail),
-      e.coursework.length ? chips(e.coursework) : "")));
 }
 
 function renderExperience(p) {
@@ -147,7 +136,7 @@ function renderContact(p) {
 
 renderHero(PROFILE);
 renderAbout(PROFILE);
-renderEducation(PROFILE);
+renderEducation(document.getElementById("journey"), document.getElementById("education-list"), PROFILE);
 renderExperience(PROFILE);
 renderProjects(PROFILE);
 renderSkills(PROFILE);

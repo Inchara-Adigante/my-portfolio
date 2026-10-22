@@ -50,3 +50,15 @@ test("the homepage has the role switch and its live note", () => {
   assert.match(html, /<ul id="hero-roles" class="pill-row focus-row"/);
   assert.match(html, /id="focus-note"[^>]*aria-live="polite"/);
 });
+
+test("the journey's Today marker sits between the right stops", async () => {
+  const { todayPosition } = await import("../js/education.js");
+  const stops = PROFILE.journey;
+  const n = stops.length;
+  // Oct 2026 falls between the AWS certification (Jul 2026, stop 7) and graduation (Dec 2026, stop 8).
+  const pos = todayPosition(stops, new Date(2026, 9, 22));
+  assert.ok(pos > (6.5 / n) * 100 && pos < (7.5 / n) * 100, `got ${pos}`);
+  assert.equal(todayPosition(stops, new Date(2018, 0, 1)), (0.5 / n) * 100);
+  assert.equal(todayPosition(stops, new Date(2030, 0, 1)), ((n - 0.5) / n) * 100);
+  for (let i = 1; i < n; i++) assert.ok(stops[i].date > stops[i - 1].date, "stops are in date order");
+});

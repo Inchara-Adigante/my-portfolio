@@ -68,10 +68,6 @@ export const PROFILE = Object.freeze({
   askOnly: Object.freeze({
     salary: null,
     visa: null,
-    gpa: Object.freeze([
-      Object.freeze({ school: "Northeastern University", degree: "MS in Information Systems", score: "3.8/4.0" }),
-      Object.freeze({ school: "Visvesvaraya Technological University", degree: "BE in Information Science & Engineering", score: "8.7/10" }),
-    ]),
   }),
   contact: Object.freeze({
     email: "adiganteinchara@gmail.com",
@@ -81,24 +77,55 @@ export const PROFILE = Object.freeze({
     instagram: null,
     resume: "/assets/Inchara_Adigante_Resume.pdf",
   }),
+  // gpa drives the ring chart. courses ({ name, project }) link a course to the project id where it
+  // was applied; the "Where I used it" map only appears once a school has courses listed.
   education: [
     {
       school: "Northeastern University",
+      short: "Northeastern",
       logo: "/assets/schools/northeastern.webp",
       degree: "Master of Science in Information Systems",
       detail: "Graduating December 2026",
       dates: "Sep 2024 – Dec 2026",
       place: "Boston, MA",
-      coursework: [],
+      gpa: { score: 3.8, max: 4.0 },
+      coursework: [
+        "Data Management & Database Design", "Data Science Engineering Methods", "Application Engineering & Development",
+        "Program Structures & Algorithms", "Concepts of Object-Oriented Design", "Software Quality Control & Management",
+        "Advanced Business Process Engineering",
+      ],
+      courses: [
+        { name: "Data Management & Database Design", project: "revenue" },
+        { name: "Data Science Engineering Methods", project: "ev" },
+        { name: "Software Quality Control & Management", project: "ev" },
+        { name: "Application Engineering & Development", project: "jobzilla" },
+      ],
     },
     {
       school: "Visvesvaraya Technological University",
+      short: "VTU",
       degree: "Bachelor of Engineering in Information Science & Engineering",
-      detail: "Information Science & Engineering",
+      detail: "Graduated June 2023",
       dates: "Jul 2019 – Jun 2023",
       place: "Karnataka, India",
-      coursework: [],
+      gpa: { score: 8.7, max: 10 },
+      coursework: [
+        "Artificial Intelligence & Machine Learning", "Data Structures & Algorithms", "Database Management Systems",
+        "Big Data", "Cloud Computing", "Operating Systems", "Computer Networks & Security",
+      ],
+      courses: [],
     },
+  ],
+  // The education journey map, oldest first. place groups milestones under the India or Boston pin.
+  journey: [
+    { date: "2019-07", label: "Jul 2019", title: "Started BE at VTU", detail: "Information Science & Engineering", place: "india" },
+    { date: "2022-06", label: "Jun 2022", title: "Data intern, Bharat Electronics", detail: "12,000+ radar test records into MySQL", place: "india" },
+    { date: "2023-06", label: "Jun 2023", title: "Graduated BE", detail: "GPA 8.7 / 10", place: "india" },
+    { date: "2023-11", label: "Nov 2023", title: "Software Engineer, Accenture", detail: "15+ ETL workflows made 45% faster", place: "india" },
+    { date: "2024-09", label: "Sep 2024", title: "Moved to Boston for my MS", detail: "Information Systems, Northeastern", place: "boston" },
+    { date: "2025-06", label: "Jun 2025", title: "Co-op, Skyworks Solutions", detail: "A 3-hour report cut to 10 minutes", place: "boston" },
+    { date: "2026-07", label: "Jul 2026", title: "AWS Certified Data Engineer", detail: "Associate", place: "boston" },
+    { date: "2026-12", label: "Dec 2026", title: "MS graduation", detail: "GPA 3.8 / 4.0 · ready to start January 2027", place: "boston" },
   ],
   experience: [
     {
@@ -156,6 +183,7 @@ export const PROFILE = Object.freeze({
       id: "ev",
       roles: ["ai", "data", "analytics"],
       name: "EV Reliability Intelligence & Failure Prediction Platform",
+      short: "EV Reliability Platform",
       date: "",
       repo: "https://github.com/Inchara-Adigante/ev-reliability-platform",
       keywords: ["ev", "electric vehicle", "reliability", "weibull", "failure", "mtbf", "fleet", "prediction", "tensorflow", "sql server", "splunk", "survival", "predictive maintenance"],
@@ -226,6 +254,7 @@ export const PROFILE = Object.freeze({
     {
       id: "revenue",
       roles: ["data", "analytics"],
+      short: "Revenue Warehouse",
       name: "Subscription Revenue Warehouse",
       date: "",
       keywords: ["subscription", "revenue", "warehouse", "snowflake", "dbt", "churn", "retention", "tableau", "dimensional"],
@@ -287,7 +316,7 @@ export function profileAsText(p = PROFILE) {
     "", "ABOUT", p.aboutHook, ...p.about,
     ...(p.hobbies.length ? [`Hobbies: ${p.hobbies.join(", ")}`] : []),
     "", "EDUCATION",
-    ...p.education.map((e) => `- ${e.degree}, ${e.school} (${e.dates}, ${e.place}). ${e.detail}.${e.coursework.length ? ` Coursework: ${e.coursework.join(", ")}` : ""}`),
+    ...p.education.map((e) => `- ${e.degree}, ${e.school} (${e.dates}, ${e.place}). ${e.detail}. GPA ${e.gpa.score}/${e.gpa.max.toFixed(1)}.${e.coursework.length ? ` Coursework: ${e.coursework.join(", ")}` : ""}${e.courses.length ? ` Courses applied in projects: ${e.courses.map((c) => `${c.name} (${c.project})`).join(", ")}` : ""}`),
     "", "EXPERIENCE",
     ...p.experience.flatMap((x) => [`- ${x.role} at ${x.company} (${x.dates}, ${x.place})`, ...x.points.map((pt) => `  * ${pt}`)]),
     "", "PROJECTS",
@@ -304,7 +333,6 @@ export function profileAsText(p = PROFILE) {
     "", "ONLY WHEN ASKED (share each item only if the visitor asks about that exact topic; never mention it otherwise)",
     ...(ask.salary ? [`- Salary expectation: ${ask.salary}`] : []),
     ...(ask.visa ? [`- Visa / work authorization: currently on an ${ask.visa.now}; on ${ask.visa.next} from ${ask.visa.from}`] : []),
-    `- GPA: ${ask.gpa.map((g) => `${g.score} at ${g.school} (${g.degree})`).join("; ")}`,
   ];
   return lines.join("\n");
 }

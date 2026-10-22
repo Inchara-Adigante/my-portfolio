@@ -4,8 +4,9 @@ import { readFileSync, readdirSync } from "node:fs";
 import { answerLocally } from "../js/local-answers.js";
 import { PROFILE, profileAsText } from "../js/profile.js";
 
-// GPA (and salary or visa, if added to the profile) is shared only when a visitor asks about that topic.
-const SENSITIVE = /salary|\bF-1\b|\bOPT\b|\bGPA\b|3\.8\s*\/\s*4|8\.7\s*\/\s*10/i;
+// Salary and visa (if added to the profile) are shared only when a visitor asks about that topic.
+// GPA is public now: it is shown on the Education cards.
+const SENSITIVE = /salary|\bF-1\b|\bOPT\b/i;
 
 test("asked about pay or visa with no details in the profile, the assistant declines instead of guessing", () => {
   assert.equal(PROFILE.askOnly.salary, null);
@@ -39,21 +40,18 @@ test("none of it is volunteered in answers to other questions", () => {
   for (const q of questions) assert.doesNotMatch(answerLocally(q), SENSITIVE, q);
 });
 
-test("the AI sees these facts only under an ask-only heading", () => {
+test("the AI's grounding keeps an ask-only section and nothing sensitive before it", () => {
   const text = profileAsText();
   const heading = text.indexOf("ONLY WHEN ASKED");
   assert.ok(heading > 0, "has the ask-only section");
-  for (const fact of ["3.8/4.0", "8.7/10"]) {
-    const at = text.indexOf(fact);
-    assert.ok(at > heading, `${fact} appears only in the ask-only section`);
-  }
   assert.doesNotMatch(text.slice(0, heading), SENSITIVE);
+  assert.match(text, /GPA 3\.8\/4\.0/, "GPA is in the education facts");
 });
 
 test("the site itself never shows them", () => {
   const renderers = readdirSync("js").filter((f) => f.endsWith(".js") && !["profile.js", "local-answers.js"].includes(f));
   for (const file of renderers) assert.doesNotMatch(readFileSync(`js/${file}`, "utf8"), /askOnly/, file);
   for (const page of ["index.html", "experience/index.html"]) {
-    assert.doesNotMatch(readFileSync(page, "utf8"), /3\.8\/4|8\.7\/10/, page);
+    assert.doesNotMatch(readFileSync(page, "utf8"), /salary|F-1/i, page);
   }
 });

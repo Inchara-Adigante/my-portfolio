@@ -516,7 +516,8 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i { animation: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-now i { animation: none; }
+  .gpa-fill { transition: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }
   .theme-toggle span { transition: none; }
 }
@@ -598,6 +599,79 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 /* Photo: About portrait */
 /* Side by side, the photo and the text card are always the same height: the
    text sets the row height and the photo fills it (cropped from the top). */
+/* Education: journey map (js/education.js). Stops are evenly spaced; --split is where Boston
+   starts and --now is today's position, both as a share of the track. */
+.journey { padding: 22px 22px 18px; margin-bottom: 20px; }
+.journey-pins { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-2); }
+.journey-pin { display: inline-flex; align-items: center; gap: 6px; }
+.journey-pin.is-india svg { color: var(--accent); }
+.journey-pin.is-boston svg { color: var(--teal); }
+.journey-track { position: relative; padding-top: 4px; }
+.journey-line {
+  position: absolute; left: 0; right: 0; top: 41px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) var(--split), var(--teal) var(--split), var(--teal) 100%); opacity: 0.55;
+}
+.journey-now { position: absolute; top: 33px; left: var(--now); transform: translateX(-50%); display: grid; justify-items: center; pointer-events: none; z-index: 1; }
+.journey-now i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--teal); background: var(--bg); box-shadow: 0 0 0 4px color-mix(in srgb, var(--teal) 18%, transparent); animation: now-pulse 2.4s ease-in-out infinite; }
+.journey-now b { margin-top: -50px; font: 600 0.66rem var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+@keyframes now-pulse { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--teal) 0%, transparent); } }
+.journey-stops { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--stops, 8), minmax(0, 1fr)); }
+.journey-stop { min-width: 0; }
+.stop {
+  width: 100%; display: grid; justify-items: center; text-align: center; gap: 6px; padding: 4px 4px 2px; border: 0; background: none;
+  color: inherit; font: inherit; cursor: pointer; border-radius: 12px;
+}
+.stop:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.stop-when { font: 500 0.72rem ui-monospace, Menlo, monospace; color: var(--muted); height: 1.2em; }
+.stop-dot { width: 12px; height: 12px; border-radius: 50%; margin: 9px 0 4px; background: var(--bg); border: 2px solid var(--accent); transition: transform 0.2s, background 0.2s; position: relative; z-index: 2; }
+.is-boston .stop-dot { border-color: var(--teal); }
+.stop-title { font-size: 0.84rem; line-height: 1.3; color: var(--text-2); font-weight: 700; }
+.stop-detail { font-size: 0.78rem; line-height: 1.35; color: var(--muted); max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.25s, opacity 0.25s; }
+.stop:hover .stop-dot, .stop:focus-visible .stop-dot, .stop[aria-expanded="true"] .stop-dot { transform: scale(1.35); background: var(--accent); }
+.is-boston .stop:hover .stop-dot, .is-boston .stop:focus-visible .stop-dot, .is-boston .stop[aria-expanded="true"] .stop-dot { background: var(--teal); }
+.stop:hover .stop-detail, .stop:focus-visible .stop-detail, .stop[aria-expanded="true"] .stop-detail { max-height: 4em; opacity: 1; }
+@media (max-width: 760px) {
+  .journey-line { top: 0; bottom: 0; left: 21px; right: auto; width: 2px; height: auto;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) var(--split), var(--teal) var(--split), var(--teal) 100%); }
+  .journey-now { display: none; }
+  .journey-stops { grid-template-columns: 1fr; gap: 4px; }
+  .stop { grid-template-columns: 20px minmax(0, 1fr); grid-template-areas: "dot when" "dot title" "dot detail"; justify-items: start; text-align: left; column-gap: 14px; row-gap: 2px; padding: 6px 4px; }
+  .stop-dot { grid-area: dot; margin: 4px 0 0 4px; align-self: start; }
+  .stop-when { grid-area: when; } .stop-title { grid-area: title; }
+  .stop-detail { grid-area: detail; max-height: none; opacity: 1; }
+}
+
+/* School cards with GPA rings. */
+.school-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+.school-text h3 { margin-bottom: 2px; }
+.school-text p { margin: 0; }
+.school-meta { font-size: 0.84rem; color: var(--muted); margin-top: 2px !important; }
+.school-logo.school-initials { display: grid; place-items: center; font: 800 0.95rem var(--display); color: #ffffff; background: linear-gradient(135deg, var(--accent), var(--teal)); }
+.school-detail { margin: 12px 0 0; color: var(--text-3); }
+.gpa { position: relative; display: grid; justify-items: center; }
+.gpa-ring { transform: rotate(-90deg); }
+.gpa-track { fill: none; stroke: var(--surface-strong); stroke-width: 6; }
+.gpa-fill { fill: none; stroke: var(--teal); stroke-width: 6; stroke-linecap: round; stroke-dashoffset: var(--full); transition: stroke-dashoffset 1.3s cubic-bezier(.2, .7, .2, 1) 0.2s; }
+.school.visible .gpa-fill { stroke-dashoffset: var(--offset); }
+.gpa-value { position: absolute; top: 20px; display: grid; justify-items: center; line-height: 1; }
+.gpa-value strong { font: 700 1.05rem var(--font); }
+.gpa-value small { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+.gpa-label { font: 600 0.62rem var(--font); letter-spacing: 0.14em; color: var(--muted); margin-top: 2px; }
+.coursework { margin-top: 16px; }
+.course-map + .coursework { padding-top: 14px; border-top: 1px solid var(--border); }
+.coursework .chips { margin: 0; }
+.course-map { margin-top: 16px; }
+.course-map-title { margin: 0 0 8px; font: 600 0.7rem var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+.course-map ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.course-map li { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; font-size: 0.9rem; }
+.course-arrow { color: var(--accent); }
+@media (max-width: 520px) {
+  .course-map li { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "course course" "arrow project"; row-gap: 2px; column-gap: 8px; }
+  .course { grid-area: course; } .course-arrow { grid-area: arrow; } .course-project { grid-area: project; }
+  .course-map ul { gap: 12px; }
+}
+.course-project { justify-self: start; font: inherit; font-size: 0.86rem; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
 .about-hook {
   margin: 0 0 2px; font: 800 clamp(1.5rem, 2.8vw, 2.1rem)/1.15 var(--display); letter-spacing: -0.015em; text-wrap: balance;
   background: linear-gradient(100deg, var(--text), var(--accent) 55%, var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent;
