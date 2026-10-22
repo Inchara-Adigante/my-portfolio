@@ -102,3 +102,10 @@ test("job and project details stay hidden until a card is clicked, then open in 
   assert.match(main, /if \(!panels\.has\(x\.id\)\) panels\.set\(x\.id, projectPanel\(x\)\)/);
   assert.doesNotMatch(exp, /role: "tab"/, "the old company tabs are gone");
 });
+
+test("the custom cursor follows open pop-ups into the top layer, so it stays visible", () => {
+  const cursor = readFileSync("js/cursor.js", "utf8");
+  assert.match(cursor, /dialog\[open\]/);
+  assert.match(cursor, /:modal/);
+  assert.match(cursor, /attributeFilter: \["open"\]/);
+});

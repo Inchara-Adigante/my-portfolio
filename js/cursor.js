@@ -59,6 +59,13 @@ export function initCursor() {
   const root = document.documentElement;
   const dot = makeLayer("cursor-dot");
   const ring = makeLayer("cursor-ring");
+  // A modal dialog sits in the browser's top layer, above everything in the page,
+  // so the cursor moves into the topmost open one and back to the body when it closes.
+  const followTopLayer = () => {
+    const host = [...document.querySelectorAll("dialog[open]")].filter((d) => d.matches(":modal")).at(-1) ?? document.body;
+    if (dot.parentNode !== host) host.append(dot, ring);
+  };
+  new MutationObserver(followTopLayer).observe(document.body, { subtree: true, attributes: true, attributeFilter: ["open"] });
   const animate = !prefersReducedMotion();
   let pointer = { x: -100, y: -100 };
   let ringBox = { x: -100, y: -100, w: IDLE_SIZE, h: IDLE_SIZE };
