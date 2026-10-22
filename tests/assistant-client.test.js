@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { getReply, pickFollowUps } from "../js/guru-client.js";
+import { getReply, pickFollowUps } from "../js/assistant-client.js";
 import { answerLocally } from "../js/local-answers.js";
 
-test("Guru answers through the API when it's up", async () => {
+test("Ada answers through the API when it's up", async () => {
   const realFetch = globalThis.fetch;
   globalThis.fetch = async () => ({ ok: true, json: async () => ({ success: true, reply: "From Claude." }) });
   try {
@@ -13,7 +13,7 @@ test("Guru answers through the API when it's up", async () => {
   }
 });
 
-test("Guru falls back to the offline engine when the API is down", async () => {
+test("Ada falls back to the offline engine when the API is down", async () => {
   const realFetch = globalThis.fetch;
   const realWarn = console.warn;
   globalThis.fetch = async () => { throw new Error("offline"); };
@@ -34,8 +34,8 @@ test("follow-up suggestions skip what was already asked", () => {
   assert.ok(!next.includes(first[0]));
 });
 
-test("every question Guru suggests gets a real answer even offline", async () => {
-  const { SUGGESTIONS, FOLLOW_UPS } = await import("../js/guru-client.js");
+test("every question Ada suggests gets a real answer even offline", async () => {
+  const { SUGGESTIONS, FOLLOW_UPS } = await import("../js/assistant-client.js");
   const unanswered = [...SUGGESTIONS, ...FOLLOW_UPS].filter((q) => answerLocally(q).startsWith("I'm not sure"));
   assert.deepEqual(unanswered, []);
 });

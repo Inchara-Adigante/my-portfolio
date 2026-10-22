@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { execSync } from "node:child_process";
 import { PROFILE } from "../js/profile.js";
 
 const SKIP_DIRS = new Set(["node_modules", "tests", ".git", ".vercel", ".claude"]);
@@ -41,9 +42,11 @@ test("every post in the profile has a page whose title matches", () => {
   }
 });
 
-test("no page still mentions the template's original owner", () => {
-  const files = [...htmlFiles(), "js/chrome.js", "js/chatbot.js", "js/local-answers.js", "js/guru-client.js", "api/chat.js", "sitemap.xml", "robots.txt"];
-  for (const file of files) assert.doesNotMatch(readFileSync(file, "utf8"), /likhith/i, file);
+test("no file in the repo still carries the template's owner, school or assistant name", () => {
+  // Every tracked text file, README included; this test is the one place the old names appear.
+  const files = execSync("git ls-files", { encoding: "utf8" }).split("\n")
+    .filter((f) => f && !/\.(png|jpe?g|webp|pdf|ico|woff2?)$/.test(f) && f !== "tests/site.test.js");
+  for (const file of files) assert.doesNotMatch(readFileSync(file, "utf8"), /likhith|\bguru\b|bnmit/i, file);
 });
 
 test("sitemap lists every page", () => {
@@ -108,14 +111,20 @@ test("the hero photo is the casual photo", () => {
   assert.doesNotMatch(badge[1], /avatar-flip|inchara-avatar\.webp/);
 });
 
-test("the hero has the sorting hat in place of the old game", async () => {
+test("the hero holds the owl-post letter, and the old game and hat are gone", async () => {
   const html = readFileSync("index.html", "utf8");
-  assert.match(html, /<aside class="card hat-window" id="sorting-hat"/);
-  assert.doesNotMatch(html, /dino|game-window/);
-  assert.ok(!existsSync("js/dino"));
-  const { NEEDS } = await import("../js/sorting-hat.js");
-  const { FOCUS } = await import("../js/profile.js");
-  for (const need of NEEDS) assert.ok(FOCUS.some((f) => f.id === need.house), `${need.id} sorts into a known role`);
+  assert.match(html, /<aside class="card owl-window" id="owl-letter"/);
+  assert.doesNotMatch(html, /dino|game-window|sorting-hat/);
+  assert.ok(!existsSync("js/dino") && !existsSync("js/sorting-hat.js"));
+  assert.match(html, /family=Pinyon\+Script/, "the signature's script font is loaded");
+  const { LETTER, PROFILE } = await import("../js/profile.js");
+  assert.match(LETTER.greeting[0], /^Dear /);
+  // The letter's numbers are the same ones the rest of the site shows.
+  const text = [...LETTER.paragraphs, ...LETTER.spells, ...LETTER.closing].join(" ");
+  for (const fact of ["3-hour report to 10 minutes", "15+ pipelines 45% faster", "34% of failures", "January 2027"]) assert.ok(text.includes(fact), fact);
+  assert.match(PROFILE.availableFrom, /January 2027/);
+  // Bold markers are balanced, so no stray ** shows on the page.
+  for (const t of [...LETTER.paragraphs, ...LETTER.spells, ...LETTER.closing]) assert.equal(t.split("**").length % 2, 1, t);
 });
 
 test("certifications have their own section, and clicking a card opens no certificate", () => {

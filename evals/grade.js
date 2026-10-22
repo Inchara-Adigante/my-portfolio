@@ -1,7 +1,7 @@
-// Grades one Guru answer against one eval case. Pure and deterministic, so the
+// Grades one Ada answer against one eval case. Pure and deterministic, so the
 // same rules apply to the offline engine and to the live Claude endpoint.
 
-// Phrases that show Guru declined or admitted it doesn't know.
+// Phrases that show Ada declined or admitted it doesn't know.
 const DECLINE_MARKERS = [
   "don't have", "do not have", "not sure", "only help", "only answer", "can only", "can't help", "cannot help",
   "not able to", "isn't something", "is not something", "no information", "not listed", "not mentioned",

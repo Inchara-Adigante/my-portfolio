@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Runs the Guru eval and writes evals/results/<mode>.json.
+// Runs the Ada eval and writes evals/results/<mode>.json.
 //
 //   node evals/run-eval.mjs                       # offline engine (free, deterministic)
-//   node evals/run-eval.mjs --live https://likhith-ng-portfolio.vercel.app/api/chat
+//   node evals/run-eval.mjs --live https://adiganteinchara.vercel.app/api/chat
 //
 // Live mode calls the real Claude-backed endpoint, which costs API credits and
 // is rate limited to 20 questions per 10 minutes per IP, so it waits between
@@ -34,7 +34,7 @@ function parseArgs(argv) {
 async function askLive(url, question) {
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-guru-eval": "1" },
+    headers: { "Content-Type": "application/json", "x-assistant-eval": "1" },
     body: JSON.stringify({ messages: [{ role: "user", content: question }] }),
     signal: AbortSignal.timeout(LIVE_TIMEOUT_MS),
   });
@@ -47,7 +47,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const suite = JSON.parse(readFileSync(join(here, "guru-eval.json"), "utf8"));
+  const suite = JSON.parse(readFileSync(join(here, "assistant-eval.json"), "utf8"));
   const results = [];
 
   for (const [index, testCase] of suite.cases.entries()) {

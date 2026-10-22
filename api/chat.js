@@ -95,7 +95,7 @@ export default async function handler(req, res) {
 
   // Log in parallel with the model call; logging never blocks or fails the reply.
   // Eval runs mark themselves so they don't pollute the visitor question log.
-  const isEval = req.headers["x-guru-eval"] === "1";
+  const isEval = req.headers["x-assistant-eval"] === "1";
   const logged = isEval ? Promise.resolve() : logQuestion(messages[messages.length - 1].content, { turns: messages.length });
   try {
     const reply = await callClaude(messages);

@@ -1,7 +1,7 @@
-// The assistant's chat window. The answering itself lives in js/guru-client.js.
+// The assistant's chat window. The answering itself lives in js/assistant-client.js.
 
 import { PROFILE } from "./profile.js";
-import { MAX_INPUT_CHARS, SUGGESTIONS, getReply, renderRichText, revealText, pickFollowUps } from "./guru-client.js";
+import { MAX_INPUT_CHARS, SUGGESTIONS, getReply, renderRichText, revealText, pickFollowUps } from "./assistant-client.js";
 
 const BOT = PROFILE.assistant;
 

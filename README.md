@@ -1,22 +1,23 @@
-# Likhith N G — Portfolio
+# Inchara Adigante — Portfolio
 
-Static portfolio (HTML/CSS/vanilla JS modules) with:
+Personal portfolio of Inchara Adigante, an AI/ML and data engineer finishing an MS in Information Systems at Northeastern University. Live at https://adiganteinchara.vercel.app.
 
+A static site (HTML, CSS and vanilla ES modules) with two Vercel functions.
+
+- **Owl post** (`js/owl-letter.js`): a floating envelope in the hero, sealed with Inchara's initials. Breaking the seal pops her letter up alone on a blanked-out screen, where it writes itself; closing folds it back into the envelope. The words live in `LETTER` in `js/profile.js`.
 - **Skill-constellation background** (`js/background.js`): twinkling stars with each skill group hidden as a constellation; moving the cursor near one reveals its lines and skill names.
-- **Hero effects** (`js/effects.js`): typewriter headline, count-up impact stats, card spotlight and tilt.
-- **Sorting hat** (`js/sorting-hat.js`): an original wizard-hat drawing in the hero. Visitors pick what their team needs; the hat thinks out loud and sorts Inchara into a role, then highlights the matching work.
-- **Guru, the AI assistant** (`js/chatbot.js`): answers questions about Likhith. Its name and tagline live in `PROFILE.assistant`. It calls `/api/chat` (Claude, grounded in `js/profile.js`) and falls back to an offline keyword engine (`js/local-answers.js`) when the API is unavailable.
-
-- **Pages**: `/` (homepage), `/experience/` (full history), `/writing/` (posts). Header and footer come from `js/chrome.js`; secondary pages boot with `js/page.js`.
-- **Eval** (`evals/`): 52 questions in five categories (facts, ask-only details, unknowns, off-topic, prompt injection), graded by `evals/grade.js`. `npm run eval` scores the offline engine; `node evals/run-eval.mjs --live https://<site>/api/chat` scores Claude (costs credits; waits between questions for the rate limit). Results land in `evals/results/`.
-- **Question log**: `/api/chat` logs each question anonymously (no IPs; emails and phone numbers redacted by `lib/redact.js`) to the function logs. To keep them beyond Vercel's log retention, connect an Upstash Redis store from the Vercel Marketplace; entries go to the `guru:questions` list (newest 1,000).
+- **Sections**: role switch and impact numbers (`js/interactive.js`), education trail map (`js/education.js`), experience tabs (`js/experience.js`), project panels (`js/project-panels.js`), publications, skills explorer (`js/skills.js`) and the AWS credential card (`js/certifications.js`).
+- **Ada, the AI assistant** (`js/chatbot.js`): answers questions about Inchara. Its name and tagline live in `PROFILE.assistant`. It calls `/api/chat` (Claude, grounded in `js/profile.js`) and falls back to an offline keyword engine (`js/local-answers.js`) when the API is unavailable.
+- **Contact form** (`api/contact.js`): sends messages through Resend. Needs `RESEND_API_KEY`; `CONTACT_TO` overrides the recipient.
+- **Eval** (`evals/`): questions in five categories (facts, ask-only details, unknowns, off-topic, prompt injection), graded by `evals/grade.js`. `npm run eval` scores the offline engine; `node evals/run-eval.mjs --live https://adiganteinchara.vercel.app/api/chat` scores Claude (costs credits; waits between questions for the rate limit). Results land in `evals/results/`.
+- **Question log**: `/api/chat` logs each question anonymously (no IPs; emails and phone numbers redacted by `lib/redact.js`) to the function logs. To keep them beyond Vercel's log retention, connect an Upstash Redis store from the Vercel Marketplace; entries go to the `assistant:questions` list (newest 1,000).
 - **Analytics**: Vercel Web Analytics loads on the deployed site only. Turn it on in the Vercel project's Analytics tab.
 
 All facts live in **`js/profile.js`**. The page, the offline bot, and the Claude system prompt all read from it, so edit facts there only.
 
 ## Credits
 
-School logos come from Wikimedia Commons under CC BY-SA 4.0: the [Northeastern University seal](https://commons.wikimedia.org/wiki/File:NU_RGB_seal_R.png) and the [BNMIT logo](https://commons.wikimedia.org/wiki/File:BNMIT_logo.webp) (emblem cropped). Project logos are original.
+The Northeastern University seal comes from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:NU_RGB_seal_R.png) under CC BY-SA 4.0. The VTU emblem belongs to Visvesvaraya Technological University. Project logos and all illustrations are original.
 
 ## Run locally
 
@@ -32,7 +33,7 @@ npm install && npx vercel dev
 
 ## Deploy (Vercel)
 
-The Vercel project **likhith-ng-portfolio** is connected to this repo: every push to `main` deploys to production at https://likhith-ng-portfolio.vercel.app, and pushes to other branches get preview URLs. Run `npm test` before pushing.
+The Vercel project is connected to this repo: every push to `main` deploys to production at https://adiganteinchara.vercel.app, and pushes to other branches get preview URLs. Run `npm test` before pushing.
 
 ### First-time setup
 

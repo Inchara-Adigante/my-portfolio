@@ -1,5 +1,5 @@
 // Entry point for secondary pages (Experience, Writing): shared chrome,
-// background, analytics, and Guru, without the homepage sections.
+// background, analytics, and Ada, without the homepage sections.
 
 import { renderChrome, initReveal, initAnalytics } from "./chrome.js";
 import { startBackground } from "./background.js";
