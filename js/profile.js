@@ -102,12 +102,13 @@ export const PROFILE = Object.freeze({
       ],
     },
     {
-      school: "Visvesvaraya Technological University",
-      short: "VTU",
+      school: "Atria Institute of Technology",
+      short: "Atria",
+      logo: "/assets/schools/vtu.webp",
       degree: "Bachelor of Engineering in Information Science & Engineering",
-      detail: "Graduated June 2023",
+      detail: "Affiliated with Visvesvaraya Technological University (VTU) · graduated June 2023",
       dates: "Jul 2019 – Jun 2023",
-      place: "Karnataka, India",
+      place: "Bengaluru, India",
       gpa: { score: 8.7, max: 10 },
       coursework: [
         "Artificial Intelligence & Machine Learning", "Data Structures & Algorithms", "Database Management Systems",
@@ -118,7 +119,7 @@ export const PROFILE = Object.freeze({
   ],
   // The education journey map, oldest first. place groups milestones under the India or Boston pin.
   journey: [
-    { date: "2019-07", label: "Jul 2019", title: "Started BE at VTU", detail: "Information Science & Engineering", place: "india" },
+    { date: "2019-07", label: "Jul 2019", title: "Started BE at Atria", detail: "Information Science & Engineering, affiliated with VTU", place: "india" },
     { date: "2022-06", label: "Jun 2022", title: "Data intern, Bharat Electronics", detail: "12,000+ radar test records into MySQL", place: "india" },
     { date: "2023-06", label: "Jun 2023", title: "Graduated BE", detail: "GPA 8.7 / 10", place: "india" },
     { date: "2023-11", label: "Nov 2023", title: "Software Engineer, Accenture", detail: "15+ ETL workflows made 45% faster", place: "india" },
