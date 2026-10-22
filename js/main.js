@@ -2,6 +2,7 @@ import { PROFILE, FOCUS } from "./profile.js";
 import { initRoleFocus, enhanceImpact, initDebate } from "./interactive.js";
 import { renderEducation } from "./education.js";
 import { projectPanel } from "./project-panels.js";
+import { renderExperience } from "./experience.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
@@ -46,16 +47,6 @@ function renderAbout(p) {
   );
 }
 
-function renderExperience(p) {
-  document.getElementById("experience-list").replaceChildren(...p.experience.map((x) =>
-    el("article", { class: "timeline-item reveal", "data-roles": (x.roles ?? []).join(" ") },
-      el("span", { class: "dot", "aria-hidden": "true" }),
-      el("div", { class: "card", id: `exp-${x.id}` },
-        el("div", { class: "card-head" },
-          el("div", {}, el("h3", {}, x.role), el("p", { class: "accent" }, x.company)),
-          el("div", { class: "meta" }, el("span", {}, x.dates), el("span", {}, x.place))),
-        bullets(x.points)))));
-}
 
 function renderProjects(p) {
   document.getElementById("project-list").replaceChildren(...p.projects.map((x) =>
@@ -201,7 +192,7 @@ function renderContact(p) {
 renderHero(PROFILE);
 renderAbout(PROFILE);
 renderEducation(document.getElementById("journey"), document.getElementById("education-list"), PROFILE);
-renderExperience(PROFILE);
+renderExperience(document.getElementById("experience-list"), PROFILE);
 renderProjects(PROFILE);
 renderSkills(PROFILE);
 renderAchievements(PROFILE);

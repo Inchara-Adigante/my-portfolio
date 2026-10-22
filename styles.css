@@ -397,6 +397,43 @@ main { counter-reset: section; }
 #skill-list .chips li { padding: 0; border: 0; background: none; }
 /* Skill usage popover (js/skills.js): sits beside the hovered skill, arrow pointing at it. */
 #skills { position: relative; }
+/* Experience: company tabs with a split view (js/experience.js). */
+.exp { display: grid; gap: 14px; }
+.exp-tabs { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 10px; }
+.exp-tab {
+  display: grid; gap: 2px; text-align: left; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text-2); font: inherit; cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.2s, background 0.2s, opacity 0.35s, filter 0.35s;
+}
+.exp-tab::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: linear-gradient(90deg, var(--accent), var(--teal)); transform: scaleX(0); transition: transform 0.3s; }
+.exp-tab:hover { border-color: color-mix(in srgb, var(--teal) 40%, transparent); }
+.exp-tab[aria-selected="true"] { background: var(--panel); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--text); }
+.exp-tab[aria-selected="true"]::after { transform: scaleX(1); }
+.exp-tab:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.exp-tab-company { font: 800 1.05rem var(--display); }
+.exp-tab-meta { font-size: 0.8rem; color: var(--muted); }
+.exp-panel { display: grid; gap: 18px; animation: exp-in 0.35s ease-out; }
+.exp-panel[hidden] { display: none; }
+@keyframes exp-in { from { opacity: 0; transform: translateY(6px); } }
+.exp-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
+.exp-head h3 { font-size: 1.4rem; }
+.exp-company { margin: 2px 0 0; font-weight: 700; }
+.exp-summary { margin: -6px 0 0; color: var(--text-3); font-size: 1.02rem; }
+.exp-impact { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.exp-impact div { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); }
+.exp-impact dt { font: 700 1.7rem var(--font); line-height: 1.1; white-space: nowrap; background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.exp-impact dd { margin: 4px 0 0; font-size: 0.84rem; color: var(--muted); }
+.exp-split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 22px; }
+.exp-side { display: grid; gap: 18px; align-content: start; }
+.exp-block h4 { margin: 0 0 10px; font: 600 0.72rem var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+.exp-teams { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.exp-teams li { display: inline-flex; align-items: center; gap: 7px; font-size: 0.88rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); }
+.exp-teams li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); }
+@media (max-width: 820px) { .exp-split { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .exp-tabs { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+  .exp-tab { flex: 0 0 72%; scroll-snap-align: start; }
+}
+
 /* Project panels (js/project-panels.js): Architecture and Try it tabs. */
 .project-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
 .panel-tabs { display: flex; gap: 4px; padding: 6px; border-bottom: 1px solid var(--border); }
@@ -657,7 +694,7 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after, .stack-stage::after, .arch-link i, .ev-track i, .order-dot { animation: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after, .stack-stage::after, .arch-link i, .ev-track i, .order-dot, .exp-panel { animation: none; }
   .arch-link i { opacity: 1; left: 40%; }
   .gpa-fill, .trail-path, .trail-flight, .trail-future, .trail-plane, .trail-trailhead, .trail-stop, .trail-stop .stop-icon, .trail-you, .trail-flag { transition: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }

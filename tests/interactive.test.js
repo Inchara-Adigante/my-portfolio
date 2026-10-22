@@ -80,3 +80,11 @@ test("the publication card has its facts, a working link target, and a trail sto
   assert.ok(PROFILE.journey.some((s) => s.type === "pub" && s.link === `pub-${paper.id}`));
   assert.match(readFileSync("index.html", "utf8"), /<section id="publications" class="section">/);
 });
+
+test("every job has impact numbers, teams and a summary for its Experience tab", () => {
+  for (const x of PROFILE.experience) {
+    assert.ok(x.summary, `${x.id} summary`);
+    assert.ok(x.impact?.length >= 2, `${x.id} impact`);
+    assert.ok(x.teams?.length >= 1, `${x.id} teams`);
+  }
+});

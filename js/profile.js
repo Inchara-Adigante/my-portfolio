@@ -132,6 +132,15 @@ export const PROFILE = Object.freeze({
       place: "Woburn, MA",
       keywords: ["skyworks", "co-op", "coop", "sap", "manufacturing", "reconciliation", "current", "latest", "recent"],
       tags: ["Python", "SQL", "Spark", "SAP", "Power BI"],
+      // Experience tab: headline numbers, the teams Inchara worked with, and a one-line summary.
+      summary: "Owned recurring reporting data for manufacturing, sales and SAP, end to end.",
+      impact: [
+        { value: "3h → 10m", label: "recurring report runtime" },
+        { value: "15+ hrs", label: "manual review removed weekly" },
+        { value: "99%", label: "data accuracy held" },
+        { value: "3", label: "Power BI dashboards shipped" },
+      ],
+      teams: ["Finance", "Engineering", "Operations", "Analytics"],
       points: [
         "Built Python, SQL and Spark pipelines across manufacturing, sales and SAP data, standardizing 3 source domains into reliable datasets for finance, engineering and operations teams.",
         "Cut a recurring reporting workflow from 3+ hours to under 10 minutes by profiling SQL bottlenecks, removing unnecessary joins and simplifying transformation logic.",
@@ -149,6 +158,13 @@ export const PROFILE = Object.freeze({
       place: "Bengaluru, India",
       keywords: ["accenture", "etl", "consulting", "data quality"],
       tags: ["Python", "PySpark", "SQL", "Snowflake", "Data Quality"],
+      summary: "Built and tuned scheduled Snowflake ETL that analysts depended on every day.",
+      impact: [
+        { value: "45%", label: "faster across scheduled workflows" },
+        { value: "15+", label: "scheduled ETL jobs built and tuned" },
+        { value: "20+", label: "data quality checks added" },
+      ],
+      teams: ["Analysts", "Business users"],
       points: [
         "Developed Python, PySpark, SQL and Snowflake ETL workflows across 15+ scheduled jobs, standardizing recurring transformations into reusable datasets for reporting and analysis.",
         "Reduced runtime across 15+ scheduled workflows by 45% by removing repeated transformation steps, simplifying dependencies and tuning SQL processing.",
@@ -164,6 +180,12 @@ export const PROFILE = Object.freeze({
       place: "Bangalore, India",
       keywords: ["bharat", "bel", "radar", "defence", "defense", "intern"],
       tags: ["Python", "Pandas", "MySQL", "Power BI"],
+      summary: "Turned raw radar module test data into dashboards engineers used to prioritize retesting.",
+      impact: [
+        { value: "12,000+", label: "test records cleaned and loaded" },
+        { value: "4", label: "engineering measures tracked" },
+      ],
+      teams: ["Test engineers"],
       points: [
         "Processed 12,000+ radar module test records with Python and Pandas, standardizing voltage, signal strength, calibration status and failure codes before loading them into MySQL.",
         "Built Power BI dashboards across 4 engineering measures (pass rate, calibration failures, defect codes and module trends) that helped engineers prioritize retesting.",
