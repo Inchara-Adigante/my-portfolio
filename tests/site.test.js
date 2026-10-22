@@ -79,12 +79,6 @@ test("every page's share image exists and post structured data is valid", () => 
   for (const post of PROFILE.writing) assert.ok(existsSync(`assets/og/${post.slug}.png`), post.slug);
 });
 
-test("the open-to-work ring shows the profile's start date", () => {
-  const [month, year] = PROFILE.availableFrom.split(" ");
-  const expected = `OPEN TO WORK · ${month.slice(0, 3).toUpperCase()} ${year} · AI + DATA ENGINEER ·`;
-  assert.match(readFileSync("index.html", "utf8"), new RegExp(`id="avatar-text"[^>]*>${expected.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}<`));
-});
-
 test("nothing redraws every frame over the animated background", () => {
   const css = ["styles.css", "pages.css", "chatbot.css"].map((f) => readFileSync(f, "utf8")).join("\n");
   // Blur is re-rendered on every canvas frame, so only the small phone glass (tab bar, assistant button) may use it.
@@ -104,11 +98,11 @@ test("text fields are at least 16px on touch screens, so iPhones don't zoom in o
   }
 });
 
-test("the hero photo is the casual photo", () => {
-  const badge = readFileSync("index.html", "utf8").match(/<span class="avatar-badge">([\s\S]*?)<\/span>\n/);
-  assert.ok(badge, "avatar badge exists");
-  assert.match(badge[1], /<img src="\/assets\/inchara-casual\.webp" alt="[^"]+"/);
-  assert.doesNotMatch(badge[1], /avatar-flip|inchara-avatar\.webp/);
+test("the hero has no photo, only the certification and availability", () => {
+  const hero = readFileSync("index.html", "utf8").match(/<div class="hero-id">([\s\S]*?)<\/div>/)[1];
+  assert.doesNotMatch(hero, /<img src="\/assets\/inchara-|avatar-badge/);
+  assert.match(hero, /class="hero-creds"/);
+  assert.match(hero, /id="hero-availability"/);
 });
 
 test("the hero holds the owl-post letter, and the old game and hat are gone", async () => {

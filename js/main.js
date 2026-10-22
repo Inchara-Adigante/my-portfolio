@@ -30,8 +30,6 @@ function renderHero(p) {
   document.getElementById("hero-tagline").textContent = p.tagline;
   document.getElementById("hero-availability").textContent =
     `Graduating ${p.graduation} · open to full-time roles from ${p.availableFrom}`;
-  const [month, year] = p.availableFrom.split(" ");
-  document.getElementById("avatar-text").textContent = `OPEN TO WORK · ${month.slice(0, 3).toUpperCase()} ${year} · AI + DATA ENGINEER ·`;
   typewriter(document.getElementById("hero-typed"), p.headlinePhrases);
   renderImpact(document.getElementById("impact-stats"), p.impact);
   enhanceImpact(document.getElementById("impact-stats"), p.impact);
