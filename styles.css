@@ -516,8 +516,8 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-now, .journey-today i { animation: none; }
-  .gpa-fill, .journey-line, .journey-stop, .journey-plane, .journey-now { transition: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i, .journey-today i, .trail-you i, .flag-icon::after { animation: none; }
+  .gpa-fill, .trail-path, .trail-flight, .trail-future, .trail-plane, .trail-trailhead, .trail-stop, .trail-stop .stop-icon, .trail-you, .trail-flag { transition: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }
   .theme-toggle span { transition: none; }
 }
@@ -599,82 +599,94 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 /* Photo: About portrait */
 /* Side by side, the photo and the text card are always the same height: the
    text sets the row height and the photo fills it (cropped from the top). */
-/* Education: journey map (js/education.js). Stops are evenly spaced columns; cards alternate
-   above and below the line. --split is where Boston starts, --now is today, --i staggers the
-   entrance. The line draws in and stops pop up once the card is revealed. */
+/* Education: the journey as a trail map (js/education.js). The SVG trail stretches to the card;
+   stops, the plane, "You are here" and the summit flag are placed on the same points with
+   left/top percentages. Everything draws in once the card is revealed. */
 .journey { padding: 20px 22px 22px; margin-bottom: 20px; overflow: hidden; }
-.journey-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; margin-bottom: 14px; font-size: 0.88rem; color: var(--text-2); }
+.journey-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; margin-bottom: 4px; font-size: 0.88rem; color: var(--text-2); position: relative; z-index: 2; }
 .journey-pin { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
 .journey-pin.is-india .pin-icon { color: var(--accent); }
 .journey-pin.is-boston .pin-icon { color: var(--teal); }
-.pin-icon { display: inline-flex; }
+.pin-icon, .plane-icon { display: inline-flex; }
 .journey-today { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-size: 0.82rem; color: var(--teal-text);
   border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent); background: color-mix(in srgb, var(--teal) 10%, transparent); }
-.journey-today i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 0 color-mix(in srgb, var(--teal) 60%, transparent); animation: now-pulse 2.2s ease-out infinite; }
-@keyframes now-pulse { 70% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--teal) 0%, transparent); } }
+.journey-today i, .trail-you i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 0 color-mix(in srgb, var(--teal) 60%, transparent); animation: now-pulse 2.2s ease-out infinite; }
+@keyframes now-pulse { 70% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--teal) 0%, transparent); } }
 
-.journey-track { --mid: 170px; position: relative; height: calc(var(--mid) * 2); margin-top: 6px; }
-.journey-line {
-  position: absolute; left: 0; right: 0; top: calc(var(--mid) - 1px); height: 2px; border-radius: 2px; transform-origin: left; transform: scaleX(0);
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) calc(var(--split) - 3%), transparent calc(var(--split) - 3%), transparent calc(var(--split) + 3%), var(--teal) calc(var(--split) + 3%), var(--teal) 100%);
-  transition: transform 1.4s cubic-bezier(.3, .7, .2, 1);
-}
-/* The flight between India and Boston: a dashed gap with a plane on it. */
-.journey-line::after { content: ""; position: absolute; top: 0; height: 2px; left: calc(var(--split) - 3%); width: 6%;
-  background: repeating-linear-gradient(90deg, var(--muted) 0 4px, transparent 4px 9px); opacity: 0.7; }
-.journey-plane { position: absolute; left: var(--split); top: var(--mid); transform: translate(-50%, -50%) rotate(45deg) scale(0.6); color: var(--text); opacity: 0;
-  transition: opacity 0.4s 1s, transform 0.6s 1s; z-index: 2; display: inline-flex; }
-.journey-now { position: absolute; left: var(--now); top: var(--mid); width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--teal);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--teal) 60%, transparent); animation: now-pulse 2.2s ease-out infinite; z-index: 3; opacity: 0; transition: opacity 0.4s 1.3s; }
-.journey.visible .journey-line { transform: scaleX(1); }
-.journey.visible .journey-plane { opacity: 0.85; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
-.journey.visible .journey-now { opacity: 1; }
+.trail-map { position: relative; aspect-ratio: 1000 / 460; margin: 0 -6px; }
+.trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.trail-contour { fill: none; stroke: var(--text); stroke-opacity: 0.05; stroke-width: 1; }
+.trail-region { font: 800 46px var(--display); letter-spacing: 0.3em; fill: var(--text); fill-opacity: 0.035; }
+.trail-path { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s cubic-bezier(.4, .1, .2, 1); }
+.trail-path.is-india { stroke: var(--accent); }
+.trail-path.is-boston { stroke: var(--teal); transition-delay: 1.5s; }
+.trail-flight, .trail-future { fill: none; stroke-width: 2; stroke-dasharray: 3 7; stroke-linecap: round; opacity: 0; transition: opacity 0.5s; }
+.trail-flight { stroke: var(--muted); transition-delay: 1.1s; }
+.trail-future { stroke: var(--teal); transition-delay: 2.6s; }
+.journey.visible .trail-path { stroke-dashoffset: 0; }
+.journey.visible .trail-flight { opacity: 0.8; }
+.journey.visible .trail-future { opacity: 0.7; }
 
-.journey-stops { list-style: none; margin: 0; padding: 0; height: 100%; display: grid; grid-template-columns: repeat(var(--stops), minmax(0, 1fr)); }
-.journey-stop { position: relative; min-width: 0; opacity: 0; transform: translateY(8px); transition: opacity 0.45s calc(0.15s + var(--i) * 0.12s), transform 0.45s calc(0.15s + var(--i) * 0.12s); }
-.journey.visible .journey-stop { opacity: 1; transform: none; }
-.stop { position: absolute; inset: 0; width: 100%; border: 0; padding: 0 3px; background: none; color: inherit; font: inherit; text-align: center; cursor: pointer; }
-.stop:focus-visible { outline: none; }
-.stop:focus-visible .stop-card { outline: 2px solid var(--teal); outline-offset: 2px; }
+.trail-plane { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; color: var(--text); opacity: 0; transition: opacity 0.4s 1.2s; }
+.trail-plane .plane-icon { transform: rotate(45deg); }
+.trail-plane small { font: 500 0.66rem ui-monospace, Menlo, monospace; color: var(--muted); white-space: nowrap; }
+.trail-trailhead { position: absolute; transform: translate(-50%, 0); font: 600 0.62rem var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); opacity: 0; transition: opacity 0.4s 0.2s; }
+.journey.visible .trail-plane, .journey.visible .trail-trailhead { opacity: 1; }
+
+.trail-stops { list-style: none; margin: 0; padding: 0; }
+.trail-stop { position: absolute; width: 0; height: 0; opacity: 0; transition: opacity 0.4s calc(0.25s + var(--i) * 0.28s); }
+.journey.visible .trail-stop { opacity: 1; }
+.trail-stop .stop { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-align: center; }
+.trail-stop .stop:focus-visible { outline: none; }
 .stop-icon {
-  position: absolute; left: 50%; top: var(--mid); width: 32px; height: 32px; transform: translate(-50%, -50%); display: grid; place-items: center; border-radius: 50%;
-  background: var(--bg); border: 2px solid var(--accent); color: var(--accent); z-index: 2; transition: transform 0.2s, background 0.2s, color 0.2s;
+  width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent); color: var(--accent);
+  box-shadow: 0 0 0 5px var(--bg); transition: transform 0.2s, background 0.2s, color 0.2s;
 }
+.trail-stop .stop-icon { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) scale(0.4); transition: transform 0.35s cubic-bezier(.3, 1.6, .5, 1) calc(0.25s + var(--i) * 0.28s), background 0.2s, color 0.2s; }
+.journey.visible .trail-stop .stop-icon { transform: translate(-50%, -50%); }
 .is-boston .stop-icon { border-color: var(--teal); color: var(--teal); }
-/* A short stem joins each icon to its card. */
-.stop-icon::before { content: ""; position: absolute; left: 50%; width: 1px; height: 22px; background: var(--border); }
-.is-above .stop-icon::before { bottom: 100%; } .is-below .stop-icon::before { top: 100%; }
 .stop-card {
-  position: absolute; left: 4px; right: 4px; display: grid; gap: 3px; padding: 9px 8px; border-radius: 12px; border: 1px solid var(--border);
-  background: var(--surface); transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  display: grid; gap: 3px; padding: 9px 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
-.is-above .stop-card { bottom: calc(var(--mid) + 38px); }
-.is-below .stop-card { top: calc(var(--mid) + 38px); }
+.trail-stop .stop-card { position: absolute; left: 0; width: 148px; transform: translateX(-50%); }
+.trail-stop.is-above .stop-card { bottom: 28px; }
+.trail-stop.is-below .stop-card { top: 28px; }
 .stop-when { font: 500 0.7rem ui-monospace, Menlo, monospace; color: var(--muted); }
 .stop-title { font-size: 0.84rem; line-height: 1.25; font-weight: 700; color: var(--text); }
 .stop-detail { font-size: 0.76rem; line-height: 1.3; color: var(--muted); }
-.stop:hover .stop-icon, .stop:focus-visible .stop-icon { transform: translate(-50%, -50%) scale(1.12); background: var(--accent); color: var(--on-accent); }
+.stop:hover .stop-icon, .stop:focus-visible .stop-icon { background: var(--accent); color: var(--on-accent); }
+.trail-stop .stop:hover .stop-icon, .trail-stop .stop:focus-visible .stop-icon { transform: translate(-50%, -50%) scale(1.12); }
 .is-boston .stop:hover .stop-icon, .is-boston .stop:focus-visible .stop-icon { background: var(--teal); }
-.stop:hover .stop-card { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: var(--surface-strong); }
-.is-boston .stop:hover .stop-card { border-color: color-mix(in srgb, var(--teal) 50%, transparent); }
-.is-above .stop:hover .stop-card { transform: translateY(-3px); } .is-below .stop:hover .stop-card { transform: translateY(3px); }
+.stop:hover .stop-card, .stop:focus-visible .stop-card { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.is-boston .stop:hover .stop-card, .is-boston .stop:focus-visible .stop-card { border-color: color-mix(in srgb, var(--teal) 55%, transparent); }
+.trail-stop.is-above .stop:hover .stop-card { transform: translate(-50%, -3px); }
+.trail-stop.is-below .stop:hover .stop-card { transform: translate(-50%, 3px); }
 
-/* Tablets and phones: one vertical column, icons on the left line, cards beside them. */
+.trail-you { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; z-index: 3; opacity: 0; transition: opacity 0.4s 3s; pointer-events: none; }
+.trail-you i { width: 14px; height: 14px; border: 3px solid var(--bg); }
+.trail-you b { position: absolute; top: 18px; white-space: nowrap; font: 700 0.66rem var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal);
+  background: color-mix(in srgb, var(--bg) 80%, transparent); padding: 1px 6px; border-radius: 6px; }
+.journey.visible .trail-you { opacity: 1; }
+.trail-flag { position: absolute; transform: translate(-100%, -26px); display: grid; justify-items: end; gap: 4px; text-decoration: none; color: var(--teal); opacity: 0; transition: opacity 0.4s 2.9s; }
+.flag-icon { width: 22px; height: 26px; border-left: 2px solid currentColor; position: relative; margin-right: -1px; }
+.flag-icon::after { content: ""; position: absolute; left: 0; top: 1px; width: 16px; height: 11px; background: linear-gradient(135deg, var(--accent), var(--teal)); clip-path: polygon(0 0, 100% 50%, 0 100%); animation: flag-wave 2.6s ease-in-out infinite; transform-origin: left; }
+@keyframes flag-wave { 50% { transform: scaleX(0.82) skewY(-6deg); } }
+.flag-label { font: 700 0.72rem var(--font); white-space: nowrap; color: var(--teal-text); padding: 3px 8px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent); background: color-mix(in srgb, var(--teal) 10%, transparent); }
+.trail-flag:hover .flag-label { background: color-mix(in srgb, var(--teal) 22%, transparent); }
+.journey.visible .trail-flag { opacity: 1; }
+
+/* Tablets and phones: a vertical trail. */
+.trail-list { display: none; list-style: none; margin: 10px 0 0; padding: 0; position: relative; }
 @media (max-width: 1100px) {
+  .trail-map { display: none; }
+  .trail-list { display: grid; gap: 12px; }
+  .trail-list::before { content: ""; position: absolute; left: 16px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) var(--split), var(--teal) var(--split), var(--teal) 100%); }
   .journey-head { justify-content: flex-start; }
   .journey-today { order: 3; }
-  .journey-track { height: auto; }
-  .journey-line { top: 0; bottom: 0; left: 16px; right: auto; width: 2px; height: auto; transform-origin: top; transform: scaleY(0);
-    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) var(--split), var(--teal) var(--split), var(--teal) 100%); }
-  .journey-line::after, .journey-plane, .journey-now { display: none; }
-  .journey.visible .journey-line { transform: scaleY(1); }
-  .journey-stops { display: grid; grid-template-columns: 1fr; gap: 12px; height: auto; }
-  .stop { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; text-align: left; padding: 0; }
-  .stop-icon, .is-above .stop-card, .is-below .stop-card { position: relative; inset: auto; top: auto; bottom: auto; left: auto; right: auto; transform: none; }
-  .stop-icon { align-self: start; }
-  .stop:hover .stop-icon, .stop:focus-visible .stop-icon { transform: scale(1.08); }
-  .stop-icon::before { display: none; }
-  .is-above .stop:hover .stop-card, .is-below .stop:hover .stop-card { transform: none; }
+  .trail-list .stop { position: relative; width: 100%; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; text-align: left; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+  .trail-list .stop-icon { position: relative; z-index: 1; }
 }
 
 /* School cards with GPA rings. */

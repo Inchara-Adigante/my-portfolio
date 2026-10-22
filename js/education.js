@@ -1,7 +1,7 @@
-// Education section: a journey map from Bengaluru to Boston (milestone cards
-// alternating above and below a line that draws itself in, a plane where the
-// move happened, and a live "today" marker), plus school cards with animated
-// GPA rings and coursework.
+// Education section: the journey drawn as a hiking trail map from a Bengaluru
+// trailhead to a Boston summit (switchbacks through each milestone, a flight
+// across the ocean, a live "You are here" marker), plus school cards with
+// animated GPA rings and coursework.
 
 import { el } from "./dom.js";
 import { flashCard } from "./interactive.js";
@@ -60,31 +60,139 @@ export function countdown(stops, today = new Date()) {
   return `${left} month${left === 1 ? "" : "s"} to ${what}`;
 }
 
-function renderJourney(container, stops) {
-  const n = stops.length;
+// ── Trail map (desktop) ──────────────────────────────────────────────────────
+// Drawn in a 1000×460 viewBox that stretches to the card; HTML markers sit on
+// the same points as percentages, so nothing needs re-measuring on resize.
+const MAP_W = 1000;
+const MAP_H = 460;
+const LOW_Y = 300;
+const HIGH_Y = 172;
+const FLAG = { x: 990, y: 290 };
+
+/** Trail points: India stops spread over the left, Boston stops over the right, alternating low and high. */
+export function trailPoints(stops) {
   const firstBoston = stops.findIndex((s) => s.place === "boston");
-  // The move sits on the line halfway between the last India stop and the first Boston stop.
-  const split = firstBoston < 1 ? 100 : (firstBoston / n) * 100;
-  const left = countdown(stops);
-  const now = new Date().toLocaleString("en-US", { month: "short", year: "numeric" });
-  const track = el("div", { class: "journey-track", style: `--stops: ${n}; --split: ${split}%; --now: ${todayPosition(stops).toFixed(2)}%` },
-    el("span", { class: "journey-line", "aria-hidden": "true" }),
-    firstBoston > 0 && icon("move", "journey-plane"),
-    el("span", { class: "journey-now", "aria-hidden": "true" }),
-    el("ol", { class: "journey-stops" }, stops.map((s, i) =>
-      el("li", { class: `journey-stop is-${s.place} ${i % 2 ? "is-below" : "is-above"}`, style: `--i: ${i}` },
+  const india = firstBoston < 0 ? stops.length : firstBoston;
+  const spread = (count, from, to) => Array.from({ length: count }, (_, i) => (count === 1 ? from : from + ((to - from) * i) / (count - 1)));
+  const xs = [...spread(india, 60, 390), ...spread(stops.length - india, 600, 905)];
+  return xs.map((x, i) => ({ x, y: i % 2 ? HIGH_Y : LOW_Y }));
+}
+
+/** Catmull-Rom spline through points, as cubic Bézier segments [p0, c1, c2, p1]. */
+function splineSegments(pts) {
+  const at = (i) => pts[Math.max(0, Math.min(pts.length - 1, i))];
+  return pts.slice(0, -1).map((p, i) => {
+    const prev = at(i - 1), next = at(i + 1), after = at(i + 2);
+    return [p, { x: p.x + (next.x - prev.x) / 6, y: p.y + (next.y - prev.y) / 6 }, { x: next.x - (after.x - p.x) / 6, y: next.y - (after.y - p.y) / 6 }, next];
+  });
+}
+
+const pathOf = (segments) => segments.map(([p, c1, c2, q], i) => `${i ? "" : `M${p.x},${p.y}`} C${c1.x},${c1.y} ${c2.x},${c2.y} ${q.x},${q.y}`).join(" ");
+// The flight swoops low across the "ocean", under the cards.
+const flightControl = (a, b) => ({ x: (a.x + b.x) / 2 - 15, y: Math.max(a.y, b.y) + 95 });
+
+function bezierPoint([p, c1, c2, q], t) {
+  const u = 1 - t;
+  return {
+    x: u * u * u * p.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * q.x,
+    y: u * u * u * p.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * q.y,
+  };
+}
+
+/** Today's point on the trail: between the two stops it falls between, by months elapsed. */
+export function trailToday(stops, pts, today = new Date()) {
+  const now = nowMonth(today);
+  const months = stops.map((s) => monthIndex(s.date));
+  if (now <= months[0]) return pts[0];
+  if (now >= months.at(-1)) return pts.at(-1);
+  const k = months.findIndex((m, i) => now >= m && now < months[i + 1]);
+  const t = (now - months[k]) / (months[k + 1] - months[k]);
+  const firstBoston = stops.findIndex((s) => s.place === "boston");
+  if (k === firstBoston - 1) { // mid-flight: a quadratic arc
+    const a = pts[k], b = pts[k + 1], c = flightControl(a, b), u = 1 - t;
+    return { x: u * u * a.x + 2 * u * t * c.x + t * t * b.x, y: u * u * a.y + 2 * u * t * c.y + t * t * b.y };
+  }
+  const leg = k < firstBoston ? splineSegments(pts.slice(0, firstBoston))[k] : splineSegments(pts.slice(firstBoston))[k - firstBoston];
+  return bezierPoint(leg, t);
+}
+
+/** Faint, wobbly contour rings: a topographic map texture behind the trail. */
+function contours() {
+  const ring = (cx, cy, r, wobble, seed) => {
+    const pts = Array.from({ length: 48 }, (_, i) => {
+      const a = (i / 48) * Math.PI * 2;
+      const rr = r * (1 + wobble * Math.sin(a * 3 + seed) + wobble * 0.6 * Math.cos(a * 5 - seed));
+      return `${(cx + rr * Math.cos(a) * 1.6).toFixed(1)},${(cy + rr * Math.sin(a)).toFixed(1)}`;
+    });
+    return `M${pts.join(" L")} Z`;
+  };
+  return [[230, 470, 4], [800, 0, 4], [520, 260, 2]].flatMap(([cx, cy, n], g) =>
+    Array.from({ length: n }, (_, k) => ring(cx, cy, 40 + k * 34, 0.08, g * 2 + k)));
+}
+
+const pct = (p) => `left: ${((p.x / MAP_W) * 100).toFixed(2)}%; top: ${((p.y / MAP_H) * 100).toFixed(2)}%`;
+
+function trailMap(stops) {
+  const pts = trailPoints(stops);
+  const firstBoston = stops.findIndex((s) => s.place === "boston");
+  const india = pts.slice(0, firstBoston), boston = pts.slice(firstBoston);
+  const a = india.at(-1), b = boston[0], c = flightControl(a, b);
+  const today = trailToday(stops, pts);
+  const map = svg("svg", { class: "trail-svg", viewBox: `0 0 ${MAP_W} ${MAP_H}`, preserveAspectRatio: "none", "aria-hidden": "true" });
+  // The map keeps its aspect ratio, so strokes scale evenly (and pathLength-based drawing stays exact).
+  const path = (d, cls, extra = {}) => svg("path", { d, class: cls, ...extra });
+  for (const d of contours()) map.append(path(d, "trail-contour"));
+  map.append(
+    svg("text", { x: "150", y: "430", class: "trail-region" }), svg("text", { x: "760", y: "430", class: "trail-region" }),
+    path(pathOf(splineSegments(india)), "trail-path is-india", { pathLength: "1" }),
+    path(`M${a.x},${a.y} Q${c.x},${c.y} ${b.x},${b.y}`, "trail-flight"),
+    path(pathOf(splineSegments(boston)), "trail-path is-boston", { pathLength: "1" }),
+    path(`M${pts.at(-1).x},${pts.at(-1).y} Q${FLAG.x - 10},${pts.at(-1).y + 10} ${FLAG.x},${FLAG.y}`, "trail-future"));
+  const [regionA, regionB] = map.querySelectorAll(".trail-region");
+  regionA.textContent = "INDIA";
+  regionB.textContent = "USA";
+  const flightMid = { x: 0.25 * a.x + 0.5 * c.x + 0.25 * b.x, y: 0.25 * a.y + 0.5 * c.y + 0.25 * b.y };
+  return el("div", { class: "trail-map" },
+    map,
+    el("span", { class: "trail-plane", style: pct(flightMid), "aria-hidden": "true" }, icon("move", "plane-icon"), el("small", {}, "≈ 13,500 km")),
+    el("span", { class: "trail-trailhead", style: pct({ x: pts[0].x, y: pts[0].y - 44 }), "aria-hidden": "true" }, "Trailhead"),
+    el("ol", { class: "trail-stops" }, stops.map((s, i) =>
+      el("li", { class: `trail-stop is-${s.place} ${pts[i].y === HIGH_Y ? "is-above" : "is-below"}`, style: `${pct(pts[i])}; --i: ${i}` },
         el("button", { type: "button", class: "stop", "data-link": s.link ?? "", "aria-label": `${s.label}: ${s.title}. ${s.detail}` },
           icon(s.type, `stop-icon type-${s.type}`),
           el("span", { class: "stop-card" },
             el("span", { class: "stop-when" }, s.label),
             el("span", { class: "stop-title" }, s.title),
-            el("span", { class: "stop-detail" }, s.detail)))))));
+            el("span", { class: "stop-detail" }, s.detail)))))),
+    el("span", { class: "trail-you", style: pct(today), "aria-hidden": "true" }, el("i"), el("b", {}, "You are here")),
+    el("a", { class: "trail-flag", href: "#contact", style: pct(FLAG), title: "Next stop: your team. Get in touch" },
+      el("span", { class: "flag-icon", "aria-hidden": "true" }), el("span", { class: "flag-label" }, "Next stop: your team →")));
+}
+
+/** Phones and tablets: the same milestones as a vertical trail. */
+function trailList(stops) {
+  return el("ol", { class: "trail-list" }, stops.map((s) =>
+    el("li", { class: `journey-stop is-${s.place}` },
+      el("button", { type: "button", class: "stop", "data-link": s.link ?? "" },
+        icon(s.type, `stop-icon type-${s.type}`),
+        el("span", { class: "stop-card" },
+          el("span", { class: "stop-when" }, s.label),
+          el("span", { class: "stop-title" }, s.title),
+          el("span", { class: "stop-detail" }, s.detail))))));
+}
+
+function renderJourney(container, stops) {
+  const left = countdown(stops);
+  const now = new Date().toLocaleString("en-US", { month: "short", year: "numeric" });
+  const firstBoston = stops.findIndex((s) => s.place === "boston");
+  container.style.setProperty("--split", `${((firstBoston < 0 ? stops.length : firstBoston) / stops.length) * 100}%`);
   container.replaceChildren(
     el("div", { class: "journey-head" },
       el("span", { class: "journey-pin is-india" }, icon("pin", "pin-icon"), "Bengaluru, India"),
       left && el("span", { class: "journey-today" }, el("i", { "aria-hidden": "true" }), `Today · ${now} · ${left}`),
       el("span", { class: "journey-pin is-boston" }, icon("pin", "pin-icon"), "Boston, MA")),
-    track);
+    trailMap(stops),
+    trailList(stops));
   container.addEventListener("click", (e) => {
     const target = document.getElementById(e.target.closest(".stop")?.dataset.link || "");
     if (!target) return;
