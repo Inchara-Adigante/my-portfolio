@@ -32,7 +32,7 @@ test("the AWS certification shows its badge", () => {
 test("every card has the issuer's badge or logo, and none links to a certificate", () => {
   for (const c of PROFILE.certifications) {
     assert.ok(c.badge || c.logo, `${c.name} has no badge or logo`);
-    assert.equal(c.verify, undefined, `${c.name} has a verify link`);
+    if (c.verify) assert.match(c.verify, /^https:\/\/www\.credly\.com\/badges\//, `${c.name} verify link`);
     assert.ok([undefined, "fill", "wordmark"].includes(c.logoStyle), `${c.name}: unknown logoStyle ${c.logoStyle}`);
   }
 });

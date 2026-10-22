@@ -349,7 +349,11 @@ export const PROFILE = Object.freeze({
   // badge sticker at the top of the homepage. Cards show no certificates or verify links.
   certifications: [
     { group: "certification", name: "AWS Certified Data Engineer – Associate", issuer: "Amazon Web Services", date: "Jul 2026",
-      badge: "/assets/certs/aws-dea-badge.webp", featured: "AWS Data Engineer – Associate" },
+      badge: "/assets/certs/aws-dea-badge.webp", featured: "AWS Data Engineer – Associate",
+      // AWS certifications are valid for three years. The four domains are the exam guide's.
+      validUntil: "Jul 2029",
+      verify: "https://www.credly.com/badges/37c2c80d-2c85-4817-b55d-6a8c5b3f9edb",
+      domains: ["Data ingestion & transformation", "Data store management", "Data operations & support", "Data security & governance"] },
   ],
   // Rendered in the Publications section and known to the assistant. me = the author name to bold.
   publications: [

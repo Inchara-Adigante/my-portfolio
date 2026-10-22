@@ -1,7 +1,6 @@
-// Certifications section: one even grid of same-size cards, certifications
-// first, then courses, then volunteering. Each card shows the issuer's
-// official badge or logo and a small label for its kind. Cards are plain:
-// nothing on them links to or opens a certificate.
+// Certifications section. A certification with a verify link becomes a full
+// "digital credential" card (badge with a shine, validity, the domains it
+// covers, a Credly link); anything else uses the plain card grid.
 
 import { CERT_GROUPS } from "./profile.js";
 import { el } from "./dom.js";
@@ -30,7 +29,27 @@ function card(c, group) {
       el("p", { class: "cert-meta" }, certMeta(c))));
 }
 
+function credential(c) {
+  return el("article", { class: "card credential reveal" },
+    el("div", { class: "credential-badge", style: `--badge: url(${c.badge})` },
+      el("img", { src: c.badge, alt: `${c.name} badge`, width: 132, height: 132, loading: "lazy", decoding: "async" }),
+      el("span", { class: "credential-shine", "aria-hidden": "true" })),
+    el("div", { class: "credential-body" },
+      el("p", { class: "credential-kicker" }, el("span", { class: "credential-status" }, "Active"), c.issuer),
+      el("h3", {}, c.name),
+      el("dl", { class: "credential-dates" },
+        el("div", {}, el("dt", {}, "Issued"), el("dd", {}, c.date)),
+        c.validUntil && el("div", {}, el("dt", {}, "Valid through"), el("dd", {}, c.validUntil))),
+      c.domains?.length && el("div", { class: "credential-domains" },
+        el("p", { class: "credential-label" }, "What it validates"),
+        el("ul", {}, c.domains.map((d) => el("li", {}, d)))),
+      el("a", { class: "btn btn-light small credential-verify", href: c.verify, target: "_blank", rel: "noopener" }, "Verify on Credly ↗")));
+}
+
 export function renderCertifications(container, certifications) {
-  container.replaceChildren(el("div", { class: "cert-grid" },
-    groupCertifications(certifications).flatMap(({ group, items }) => items.map((c) => card(c, group)))));
+  const credentials = certifications.filter((c) => c.verify);
+  const rest = certifications.filter((c) => !c.verify);
+  const restGroups = groupCertifications(rest);
+  const grid = el("div", { class: "cert-grid" }, restGroups.flatMap(({ group, items }) => items.map((c) => card(c, group))));
+  container.replaceChildren(...credentials.map(credential), ...(restGroups.length ? [grid] : []));
 }

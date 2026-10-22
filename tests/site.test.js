@@ -123,7 +123,8 @@ test("certifications have their own section, and clicking a card opens no certif
   const html = readFileSync("index.html", "utf8");
   assert.match(html, /<section id="certifications" class="section">[\s\S]*?<div id="cert-list"><\/div>/);
   assert.doesNotMatch(html, /<ul id="cert-list"|<dialog|cert-viewer/, "no old list and no certificate viewer");
-  assert.doesNotMatch(readFileSync("js/certifications.js", "utf8"), /View certificate|Verify|showModal|window\.open|el\("a"/);
+  // The only link is the issuer's public verification page; no certificate images or viewers.
+  assert.doesNotMatch(readFileSync("js/certifications.js", "utf8"), /View certificate|showModal|window\.open/);
 });
 
 test("hero headlines are short enough for two lines on phones and match the screen-reader text", () => {
