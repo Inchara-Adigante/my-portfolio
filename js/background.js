@@ -28,7 +28,7 @@ const RESIZE_DEBOUNCE_MS = 150;
 const MIN_HEIGHT_CHANGE_PX = 150; // mobile URL bar show/hide is smaller than this
 
 // Fallbacks for the theme's --net-* colors ("r, g, b"), which styles.css sets per theme.
-const DEFAULT_COLORS = Object.freeze({ node: "200, 202, 215", link: "170, 174, 190", a: "240, 166, 202", b: "125, 211, 252" });
+const DEFAULT_COLORS = Object.freeze({ node: "200, 202, 215", link: "170, 174, 190", a: "244, 162, 89", b: "155, 212, 168" });
 
 function readColors() {
   const style = getComputedStyle(document.documentElement);

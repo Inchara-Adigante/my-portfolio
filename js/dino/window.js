@@ -30,8 +30,8 @@ function drawIcon(canvas) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = false;
   const tile = ctx.createLinearGradient(0, 0, ICON_PX, ICON_PX);
-  tile.addColorStop(0, "#f0a6ca");
-  tile.addColorStop(1, "#7dd3fc");
+  tile.addColorStop(0, "#f4a259");
+  tile.addColorStop(1, "#9bd4a8");
   ctx.fillStyle = tile;
   ctx.beginPath();
   ctx.roundRect(0, 0, ICON_PX, ICON_PX, 18);
