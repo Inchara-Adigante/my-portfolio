@@ -107,7 +107,7 @@ def main() -> None:
     p = profile()
     os.makedirs(OUT_DIR, exist_ok=True)
     avatar = avatar_uri()
-    footer = "AI/ML & Data Engineer · inchara-adigante.vercel.app"
+    footer = "AI/ML & Data Engineer · adiganteinchara.vercel.app"
     cards = {
         "home": ("PORTFOLIO", "AI/ML and data engineer building LLM apps and data pipelines", None),
         "experience": ("EXPERIENCE", "Where I've worked and what I did there", None),

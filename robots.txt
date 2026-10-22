@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://inchara-adigante.vercel.app/sitemap.xml
+Sitemap: https://adiganteinchara.vercel.app/sitemap.xml
