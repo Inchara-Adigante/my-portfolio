@@ -264,6 +264,72 @@ html.game-max { overflow: hidden; }
 .impact-item { padding: 18px 20px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--panel); display: grid; gap: 4px; }
 .impact-item strong { font: 600 2rem var(--display); background: linear-gradient(100deg, var(--text), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .impact-item span { font-size: 0.82rem; color: var(--muted); }
+
+/* Impact numbers that link to their source, with optional before/after bars (js/interactive.js). */
+.impact-item.is-link { cursor: pointer; transition: border-color 0.2s, transform 0.2s; }
+.impact-item.is-link:hover, .impact-item.is-link:focus-visible { border-color: color-mix(in srgb, var(--teal) 55%, transparent); transform: translateY(-2px); outline: none; }
+.impact-item .impact-source { margin-top: 6px; font-size: 0.75rem; font-weight: 600; color: var(--teal); opacity: 0.75; transition: opacity 0.2s; }
+.impact-item.is-link:hover .impact-source, .impact-item.is-link:focus-visible .impact-source { opacity: 1; }
+.impact-compare { display: grid; gap: 6px; margin-top: 10px; }
+.bar-row { display: grid; grid-template-columns: 46px minmax(0, 1fr) 40px; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--muted); }
+.bar-row .bar { height: 6px; border-radius: 3px; background: var(--surface-strong); overflow: hidden; }
+.bar-row .bar i { display: block; height: 100%; width: var(--w); border-radius: inherit; background: var(--muted); opacity: 0.6; transform-origin: left; animation: grow 1.1s ease-out both; }
+.bar-row.is-after .bar i { background: linear-gradient(90deg, var(--accent), var(--teal)); opacity: 1; animation-delay: 0.35s; }
+.bar-row .bar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); }
+@keyframes grow { from { transform: scaleX(0); } }
+
+/* "Hiring for…" role switch in the hero. */
+.focus-label { margin: 0 0 8px; font: 500 0.75rem ui-monospace, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.pill-row.focus-row { margin-bottom: 10px; }
+.pill-row.focus-row li { padding: 0; border: 0; background: none; }
+.focus-chip {
+  font: inherit; font-size: 0.85rem; color: var(--text-2); cursor: pointer; padding: 7px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.focus-chip:hover { border-color: color-mix(in srgb, var(--accent) 60%, transparent); }
+.focus-chip:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.focus-chip[aria-pressed="true"] { color: var(--on-accent); background: linear-gradient(100deg, var(--accent), var(--teal)); border-color: transparent; }
+.focus-note { min-height: 1.6em; margin: 0 0 24px; max-width: 60ch; color: var(--text-3); }
+.focus-note .link-arrow { white-space: nowrap; }
+.focus-clear { font: inherit; font-size: 0.8rem; color: var(--muted); background: none; border: 0; padding: 0 0 0 6px; cursor: pointer; text-decoration: underline; }
+.is-dimmed { opacity: 0.28; filter: saturate(0.4); transition: opacity 0.35s, filter 0.35s; }
+[data-roles] { transition: opacity 0.35s, filter 0.35s; }
+
+/* Jobzilla agent-debate demo. */
+.demo-btn { border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--accent-2); }
+dialog.debate {
+  width: min(620px, calc(100vw - 32px)); max-height: min(720px, calc(100vh - 48px)); padding: 0; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--float); color: var(--text); box-shadow: 0 30px 80px var(--shadow); overflow: hidden;
+}
+dialog.debate[open] { display: flex; flex-direction: column; }
+dialog.debate::backdrop { background: rgba(8, 9, 12, 0.6); }
+.debate-head { display: flex; justify-content: space-between; gap: 16px; padding: 20px 22px 12px; }
+.debate-head h3 { margin: 4px 0; font-size: 1.15rem; }
+.debate-head p { margin: 0; }
+.debate-kicker { font: 500 0.72rem ui-monospace, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+.debate-close { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; }
+.debate-cast { list-style: none; display: flex; gap: 8px; padding: 0 22px 12px; margin: 0; border-bottom: 1px solid var(--border); }
+.debate-cast li { font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.debate-log { list-style: none; margin: 0; padding: 16px 22px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex: 1; }
+.debate-turn { max-width: 88%; padding: 10px 14px; border-radius: 14px; background: var(--surface-strong); border: 1px solid var(--border); animation: rise 0.3s ease-out; }
+.debate-turn strong { display: block; font-size: 0.75rem; margin-bottom: 2px; }
+.debate-turn p { margin: 0; font-size: 0.92rem; line-height: 1.5; color: var(--text-2); }
+[data-agent="recruiter"] { color: #fda4af; }
+[data-agent="career-coach"] { color: #7dd3fc; }
+[data-agent="judge"] { color: #fcd34d; }
+:root[data-theme="light"] [data-agent="recruiter"] { color: #be123c; }
+:root[data-theme="light"] [data-agent="career-coach"] { color: #0369a1; }
+:root[data-theme="light"] [data-agent="judge"] { color: #a16207; }
+.debate-turn[data-agent="career-coach"] { align-self: flex-end; }
+.debate-turn[data-agent="judge"] { align-self: center; max-width: 100%; border-color: color-mix(in srgb, #fcd34d 45%, transparent); }
+.dots i { display: inline-block; width: 6px; height: 6px; margin-right: 3px; border-radius: 50%; background: var(--muted); animation: bob 1s infinite; }
+.dots i:nth-child(2) { animation-delay: 0.15s; } .dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bob { 50% { transform: translateY(-4px); opacity: 0.5; } }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+.debate-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 22px 18px; border-top: 1px solid var(--border); }
+.debate-foot p { margin: 0; }
+.debate-replay { flex: none; white-space: nowrap; }
+.debate-replay[hidden] { display: none; }
 .hint { grid-column: 1 / -1; text-align: center; opacity: 0.7; }
 .hint code, .section-sub code { font-family: ui-monospace, Menlo, monospace; color: var(--teal); }
 
@@ -448,7 +514,7 @@ input:focus, textarea:focus { outline: 2px solid rgba(240, 166, 202, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .pulse::after, .caret, .pipeline li::after, .card.flash { animation: none; }
+  .pulse::after, .caret, .pipeline li::after, .card.flash, .bar-row .bar i, .debate-turn, .dots i { animation: none; }
   .tab-lens, .tab-lens::before, .tab-lens::after, .tab-bar a { transition: none !important; }
   .theme-toggle span { transition: none; }
 }

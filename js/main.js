@@ -1,4 +1,5 @@
-import { PROFILE } from "./profile.js";
+import { PROFILE, FOCUS } from "./profile.js";
+import { initRoleFocus, enhanceImpact, initDebate } from "./interactive.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
@@ -24,7 +25,6 @@ const pipeline = (stages) => el("ol", { class: "pipeline", "aria-label": "Tech s
   stages.map((stage, i) => el("li", { style: `--i: ${i}` }, stage)));
 
 function renderHero(p) {
-  document.getElementById("hero-roles").replaceChildren(...p.roles.map((r) => el("li", {}, r)));
   document.getElementById("hero-tagline").textContent = p.tagline;
   document.getElementById("hero-availability").textContent =
     `Graduating ${p.graduation} · open to full-time roles from ${p.availableFrom}`;
@@ -32,6 +32,7 @@ function renderHero(p) {
   document.getElementById("avatar-text").textContent = `OPEN TO WORK · ${month.slice(0, 3).toUpperCase()} ${year} · AI + DATA ENGINEER ·`;
   typewriter(document.getElementById("hero-typed"), p.headlinePhrases);
   renderImpact(document.getElementById("impact-stats"), p.impact);
+  enhanceImpact(document.getElementById("impact-stats"), p.impact);
 }
 
 function renderAbout(p) {
@@ -55,7 +56,7 @@ function renderEducation(p) {
 
 function renderExperience(p) {
   document.getElementById("experience-list").replaceChildren(...p.experience.map((x) =>
-    el("article", { class: "timeline-item reveal" },
+    el("article", { class: "timeline-item reveal", "data-roles": (x.roles ?? []).join(" ") },
       el("span", { class: "dot", "aria-hidden": "true" }),
       el("div", { class: "card", id: `exp-${x.id}` },
         el("div", { class: "card-head" },
@@ -66,7 +67,7 @@ function renderExperience(p) {
 
 function renderProjects(p) {
   document.getElementById("project-list").replaceChildren(...p.projects.map((x) =>
-    el("article", { class: "card project reveal", id: `proj-${x.id}` },
+    el("article", { class: "card project reveal", id: `proj-${x.id}`, "data-roles": (x.roles ?? []).join(" ") },
       el("div", { class: "card-head" },
         el("div", { class: "project-title" }, projectLogo(x.id, 48), el("h3", {}, x.name)),
         x.date && el("span", { class: "meta" }, x.date)),
@@ -74,6 +75,7 @@ function renderProjects(p) {
       el("div", { class: "project-footer" },
         pipeline(x.stack),
         el("div", { class: "project-actions" },
+          x.demo && el("button", { type: "button", class: "ask-guru demo-btn", "data-demo": x.id }, "▶ Watch the agents debate"),
           el("button", { type: "button", class: "ask-guru", "data-ask": `Tell me about ${shortName(x.name)}` }, `✦ Ask ${p.assistant.name} about this`),
           x.repo && el("a", { class: "link-arrow small", href: x.repo, target: "_blank", rel: "noopener" }, x.repoLabel ?? "Code on GitHub →"))))));
 }
@@ -91,7 +93,7 @@ function initProjectQuestions(list, assistant) {
 
 function renderSkills(p) {
   document.getElementById("skill-list").replaceChildren(...p.skills.map((s) =>
-    el("article", { class: "card reveal" }, el("h3", {}, s.group),
+    el("article", { class: "card reveal", "data-roles": (s.roles ?? []).join(" ") }, el("h3", {}, s.group),
       el("ul", { class: "chips" }, s.items.map((item) =>
         el("li", {}, el("button", { type: "button", class: "skill-chip", "data-skill": item, "aria-pressed": "false" }, item)))))));
 }
@@ -162,3 +164,5 @@ const dinoStatus = document.getElementById("dino-status");
 initGameWindow(document.querySelector(".game-slot"), initDinoGame(document.getElementById("dino-game"), dinoStatus), dinoStatus);
 initSkillExplorer(document.getElementById("skill-list"), document.getElementById("skill-insight"), PROFILE, assistant);
 initProjectQuestions(document.getElementById("project-list"), assistant);
+initRoleFocus(document.getElementById("hero-roles"), document.getElementById("focus-note"), FOCUS);
+initDebate(document.getElementById("project-list"), PROFILE.projects);

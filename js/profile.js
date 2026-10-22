@@ -1,6 +1,17 @@
 // Single source of truth for the page content, the local chatbot, and the
 // Claude-backed /api/chat system prompt. Edit facts here only.
 
+// The roles a visitor can pick in the hero ("Hiring for…"). Experience, projects and
+// skill groups list the ids they support in `roles`; everything else dims.
+export const FOCUS = Object.freeze([
+  { id: "ai", label: "AI/ML Engineering",
+    pitch: "Multi-agent LLM systems with LangGraph, semantic search over OpenAI embeddings, and the FastAPI services around them." },
+  { id: "data", label: "Data Engineering",
+    pitch: "Production Spark, Snowflake and Airflow pipelines: a 3-hour report cut to 10 minutes and 15+ ETL jobs made 45% faster." },
+  { id: "analytics", label: "Analytics Engineering",
+    pitch: "dbt models, 20+ data quality checks, and Power BI and Tableau dashboards that teams check every day." },
+]);
+
 export const PROFILE = Object.freeze({
   name: "Inchara Adigante",
   shortName: "Inchara Adigante",
@@ -16,7 +27,7 @@ export const PROFILE = Object.freeze({
   relocation: "Open to relocation",
   graduation: "December 2026",
   availableFrom: "January 2027",
-  roles: ["AI/ML Engineering", "Data Engineering", "Analytics Engineering"],
+  roles: FOCUS.map((f) => f.label),
   // Each phrase finishes "I build ..." and is tied to real work. Keep them at 32 characters or fewer so the
   // typed headline stays on two lines on phones.
   headlinePhrases: [
@@ -27,10 +38,14 @@ export const PROFILE = Object.freeze({
     "dashboards teams trust.",
   ],
   impact: [
-    { value: 94, suffix: "%", label: "faster reporting at Skyworks: 3 hours down to under 10 minutes" },
-    { value: 15, suffix: "+ hrs", label: "of manual review removed every week with automated reconciliation" },
-    { value: 45, suffix: "%", label: "faster runtime across 15+ scheduled ETL workflows at Accenture" },
-    { value: 20, suffix: "+", label: "data quality checks added to production Snowflake pipelines" },
+    // source: the experience card the number comes from. compare: an optional before/after bar
+    // (ratio = after / before).
+    { value: 94, suffix: "%", label: "faster reporting at Skyworks: 3 hours down to under 10 minutes", source: "skyworks",
+      compare: { before: "3h", after: "10m", ratio: 10 / 180 } },
+    { value: 15, suffix: "+ hrs", label: "of manual review removed every week with automated reconciliation", source: "skyworks" },
+    { value: 45, suffix: "%", label: "faster runtime across 15+ scheduled ETL workflows at Accenture", source: "accenture",
+      compare: { before: "100%", after: "55%", ratio: 0.55 } },
+    { value: 20, suffix: "+", label: "data quality checks added to production Snowflake pipelines", source: "accenture" },
   ],
   tagline:
     "I'm an AI/ML and data engineer finishing my MS in Information Systems at Northeastern University. I build LLM agents and the pipelines, warehouses and dashboards that keep them fed with trustworthy data.",
@@ -80,6 +95,7 @@ export const PROFILE = Object.freeze({
   experience: [
     {
       id: "skyworks",
+      roles: ["data", "analytics"],
       role: "Data Engineer Co-op",
       company: "Skyworks Solutions",
       dates: "Jun 2025 – Dec 2025",
@@ -95,6 +111,7 @@ export const PROFILE = Object.freeze({
     },
     {
       id: "accenture",
+      roles: ["data", "analytics"],
       role: "Software Engineer",
       company: "Accenture",
       dates: "Nov 2023 – Jul 2024",
@@ -110,6 +127,7 @@ export const PROFILE = Object.freeze({
     },
     {
       id: "bel",
+      roles: ["data", "analytics"],
       role: "Data Engineering Intern",
       company: "Bharat Electronics Limited",
       dates: "Jun 2022 – Dec 2022",
@@ -128,6 +146,7 @@ export const PROFILE = Object.freeze({
   projects: [
     {
       id: "jobzilla",
+      roles: ["ai"],
       name: "Jobzilla AI — Multi-Agent Job Search Assistant",
       date: "",
       repo: "https://github.com/IncharaAdigante/jobzilla-ai",
@@ -145,9 +164,22 @@ export const PROFILE = Object.freeze({
         "Job data moves through a Bronze-Silver-Gold pipeline with scheduled Airflow DAGs, and MCP connectors bring in job-market listings and GitHub context.",
         "The whole stack runs with Docker Compose, and GitHub Actions workflows live in the repo.",
       ],
+      // A scripted sample for the "Watch the agents debate" demo on the card. Not real output.
+      demo: Object.freeze({
+        role: "Machine Learning Engineer at a fintech startup",
+        candidate: "Sample candidate: 2 years of data engineering and one LLM side project",
+        turns: [
+          { agent: "Recruiter", text: "Strong pipeline work, but only one shipped ML project and no production model monitoring. That's a real gap for this role." },
+          { agent: "Career Coach", text: "Their Spark and Airflow experience covers most of this job's MLOps duties, and the LLM project shows they learn fast. Lead with the pipelines." },
+          { agent: "Recruiter", text: "Fair, but the posting asks for PyTorch and it isn't anywhere on the résumé." },
+          { agent: "Career Coach", text: "True. A small PyTorch project would close that gap, and the cover letter can frame the data work as feature engineering." },
+          { agent: "Judge", text: "Verdict: apply. Fit 7/10. Strengths: data pipelines and learning speed. Gap: model training. Next step: a cover letter that leads with the pipeline work." },
+        ],
+      }),
     },
     {
       id: "orders",
+      roles: ["data"],
       name: "Real-Time Order Processing Pipeline",
       date: "",
       keywords: ["order", "orders", "kafka", "streaming", "real-time", "real time", "glue", "athena", "transactions"],
@@ -161,6 +193,7 @@ export const PROFILE = Object.freeze({
     },
     {
       id: "revenue",
+      roles: ["data", "analytics"],
       name: "Subscription Revenue Warehouse",
       date: "",
       keywords: ["subscription", "revenue", "warehouse", "snowflake", "dbt", "churn", "retention", "tableau", "dimensional"],
@@ -176,10 +209,10 @@ export const PROFILE = Object.freeze({
   // Posts live at /writing/<slug>/. Empty for now.
   writing: [],
   skills: [
-    { group: "AI / LLMs", items: ["LangGraph", "LangChain", "OpenAI API", "GPT-4", "RAG", "Embeddings", "Pinecone", "MCP", "Multi-Agent Systems"] },
-    { group: "Data Engineering", items: ["Python", "SQL", "Spark / PySpark", "Kafka", "Airflow", "dbt", "Snowflake", "Redshift", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
-    { group: "Cloud / Backend", items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions"] },
-    { group: "Analytics & BI", items: ["Power BI", "Tableau", "Pandas", "NumPy", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },
+    { group: "AI / LLMs", roles: ["ai"], items: ["LangGraph", "LangChain", "OpenAI API", "GPT-4", "RAG", "Embeddings", "Pinecone", "MCP", "Multi-Agent Systems"] },
+    { group: "Data Engineering", roles: ["data", "analytics"], items: ["Python", "SQL", "Spark / PySpark", "Kafka", "Airflow", "dbt", "Snowflake", "Redshift", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
+    { group: "Cloud / Backend", roles: ["ai", "data"], items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions"] },
+    { group: "Analytics & BI", roles: ["analytics"], items: ["Power BI", "Tableau", "Pandas", "NumPy", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },
   ],
   // group: one of CERT_GROUPS. badge = the issuer's official badge; logo = the issuer's official logo
   // (unchanged, from its own site), used when there is no badge. logoStyle "fill": the file is already a
