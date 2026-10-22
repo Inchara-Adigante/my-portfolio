@@ -432,6 +432,8 @@ main { counter-reset: section; }
 @media (max-width: 560px) {
   .exp-tabs { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
   .exp-tab { flex: 0 0 72%; scroll-snap-align: start; }
+  .exp-impact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .exp-impact dt { font-size: 1.35rem; }
 }
 
 /* Project panels (js/project-panels.js): Architecture and Try it tabs. */
