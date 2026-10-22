@@ -8,7 +8,7 @@ import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
 import { initDinoGame } from "./dino/runner.js";
 import { initGameWindow } from "./dino/window.js";
-import { initSkillExplorer, findSkillUsage } from "./skills.js";
+import { initSkillExplorer } from "./skills.js";
 import { initContactForm } from "./contact.js";
 import { renderChrome, initReveal, initAnalytics } from "./chrome.js";
 import { initCursor } from "./cursor.js";
@@ -73,17 +73,9 @@ function initProjectQuestions(list, assistant) {
   });
 }
 
-const MAX_DOTS = 3;
-
-/** A skill chip with evidence dots: one per job or project that used it (3 means 3 or more). */
+/** A skill chip; hovering or tapping it shows where the skill was used (js/skills.js). */
 function skillChip(p, skill) {
-  const uses = findSkillUsage(p, skill).length;
-  const dots = Math.min(uses, MAX_DOTS);
-  return el("li", {}, el("button", {
-    type: "button", class: "skill-chip", "data-skill": skill, "aria-pressed": "false",
-    title: uses ? `Used in ${uses} job${uses === 1 ? "" : "s"} or project${uses === 1 ? "" : "s"}` : "On the résumé",
-  }, skill, dots > 0 && el("span", { class: "evidence", "aria-hidden": "true" },
-    ...Array.from({ length: MAX_DOTS }, (_, i) => el("i", { class: i < dots ? "on" : "" })))));
+  return el("li", {}, el("button", { type: "button", class: "skill-chip", "data-skill": skill, "aria-pressed": "false" }, skill));
 }
 
 /** Skills as the stages of a data pipeline, with the shared foundations underneath. */
