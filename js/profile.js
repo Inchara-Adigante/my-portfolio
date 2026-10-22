@@ -383,6 +383,29 @@ export const PROFILE = Object.freeze({
 });
 
 /** The certification groups, in the order the site and the assistant list them. */
+// The owl-post letter in the hero. **text** is set in bold; the signature and envelope use a script face.
+export const LETTER = Object.freeze({
+  envelope: ["To the Kind Soul Reading This", "Seated before the Glowing Screen", "Wherever in the World You May Be"],
+  letterhead: "Student of data magic · Boston, MA · by owl post",
+  greeting: ["Dear Brave Seal-Breaker", "(a true Gryffindor move)"],
+  paragraphs: [
+    "Thank you for breaking the seal. I chose to send this by owl because what it holds matters to me more than anything else on this page.",
+    "I crossed an ocean, from Bengaluru to Boston, with one wish: to work with data in ways that truly help people. Finding the right team to do that with would mean the world to me. Here are a few spells I have cast along the way:",
+  ],
+  spells: [
+    "Shrank a **3-hour report to 10 minutes** at Skyworks",
+    "Made **15+ pipelines 45% faster** at Accenture",
+    "Taught AI agents to debate, and built a model that **foresees 34% of failures**",
+  ],
+  closing: [
+    "I complete my Master's at Northeastern in December 2026 and am ready to begin in **January 2027**, full-time and with my whole heart.",
+    "If you are hiring, I would be honoured to bring that same care and curiosity to your team. And if you are not, you can still help more than you know: a word of feedback on my work, a tip, or an introduction to someone I should meet. **Even the smallest kindness** is a little magic to me.",
+  ],
+  signOff: "With hope and heartfelt gratitude,",
+  credential: "MS Information Systems, Northeastern University",
+  postscript: "P.S. My owl will wait patiently for your reply, be it a job, a tip or simply a kind word.",
+});
+
 export const CERT_GROUPS = Object.freeze([
   { id: "certification", title: "Certifications", label: "Certification" },
   { id: "course", title: "Courses & training", label: "Course" },

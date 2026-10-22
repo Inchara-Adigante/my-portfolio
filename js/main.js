@@ -1,4 +1,4 @@
-import { PROFILE, FOCUS } from "./profile.js";
+import { PROFILE, FOCUS, LETTER } from "./profile.js";
 import { initRoleFocus, enhanceImpact, initDebate } from "./interactive.js";
 import { renderEducation } from "./education.js";
 import { projectPanel } from "./project-panels.js";
@@ -6,7 +6,7 @@ import { renderExperience } from "./experience.js";
 import { startBackground } from "./background.js";
 import { initChatbot } from "./chatbot.js";
 import { typewriter, renderImpact, initCardEffects, initScrollUI } from "./effects.js";
-import { initSortingHat } from "./sorting-hat.js";
+import { initOwlLetter } from "./owl-letter.js";
 import { initSkillExplorer } from "./skills.js";
 import { initContactForm } from "./contact.js";
 import { renderChrome, initReveal, initAnalytics } from "./chrome.js";
@@ -57,7 +57,7 @@ function renderProjects(p) {
       el("div", { class: "project-footer" },
         projectPanel(x),
         el("div", { class: "project-actions" },
-          el("button", { type: "button", class: "ask-guru", "data-ask": `Tell me about ${shortName(x.name)}` }, `✦ Ask ${p.assistant.name} about this`),
+          el("button", { type: "button", class: "ask-assistant", "data-ask": `Tell me about ${shortName(x.name)}` }, `✦ Ask ${p.assistant.name} about this`),
           x.repo && el("a", { class: "link-arrow small", href: x.repo, target: "_blank", rel: "noopener" }, x.repoLabel ?? "Code on GitHub →"))))));
 }
 
@@ -131,7 +131,7 @@ function renderPublications(p, getAssistant) {
         el("div", { class: "pub-actions" },
           el("a", { class: "btn btn-light small", href: x.url, target: "_blank", rel: "noopener" }, "Read paper ↗"),
           el("button", { type: "button", class: "btn btn-ghost small", "data-cite": x.id }, "Copy citation"),
-          el("button", { type: "button", class: "ask-guru", "data-ask": `Tell me about the ${x.venueShort} paper` }, `✦ Ask ${p.assistant.name} about this`))),
+          el("button", { type: "button", class: "ask-assistant", "data-ask": `Tell me about the ${x.venueShort} paper` }, `✦ Ask ${p.assistant.name} about this`))),
       el("dl", { class: "pub-stats" }, x.stats.map((s) => el("div", {}, el("dt", {}, s.value), el("dd", {}, s.label)))))));
   list.addEventListener("click", async (e) => {
     const ask = e.target.closest("[data-ask]");
@@ -199,12 +199,7 @@ initCardEffects();
 initScrollUI(document.getElementById("scroll-progress"), nav);
 startBackground(document.getElementById("bg-canvas"));
 const assistant = initChatbot(document.getElementById("chatbot"));
-// The hat's "Show me the proof" turns on the matching role in the hero switch and scrolls to the work.
-initSortingHat(document.getElementById("sorting-hat"), FOCUS, (role) => {
-  const chip = document.querySelector(`.focus-chip[data-focus="${role}"]`);
-  if (chip && chip.getAttribute("aria-pressed") !== "true") chip.click();
-  document.querySelector(`[data-roles~="${role}"]`)?.closest("section[id]")?.scrollIntoView({ behavior: "smooth", block: "start" });
-});
+initOwlLetter(document.getElementById("owl-letter"), LETTER, PROFILE);
 initSkillExplorer(document.getElementById("skill-list"), document.getElementById("skill-insight"), PROFILE, assistant);
 initProjectQuestions(document.getElementById("project-list"), assistant);
 initRoleFocus(document.getElementById("hero-roles"), document.getElementById("focus-note"), FOCUS);

@@ -6,7 +6,7 @@
   /* Cards and floating bars sit over the animated canvas. They use mostly
      opaque fills instead of backdrop-filter blur, which the GPU would have
      to redo on every animation frame. The one exception is the small
-     liquid-glass tab bar and Guru button on phones. */
+     liquid-glass tab bar and Ada button on phones. */
   --panel: rgba(14, 36, 48, 0.82);
   --panel-strong: rgba(18, 42, 55, 0.86);
   --bar: rgba(7, 26, 36, 0.93);
@@ -35,7 +35,7 @@
   --success: #86efac;
   --danger: #fca5a5;
   --cursor-snap: #ffffff;
-  /* Window chrome on the hero sorting-hat card; code blocks in posts stay dark in both themes. */
+  /* Window chrome on the hero owl-post card; code blocks in posts stay dark in both themes. */
   --window-bar: rgba(255, 255, 255, 0.03);
   --window-divider: rgba(255, 255, 255, 0.08);
   --code-bg: rgba(10, 10, 14, 0.7);
@@ -201,73 +201,103 @@ kbd { font: 500 0.72rem var(--font); padding: 1px 6px; border-radius: 6px; borde
 .socials a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: var(--muted); transition: color 0.2s, background 0.2s; }
 .socials a:hover { color: var(--text); background: var(--surface-strong); }
 
-/* Hero sorting hat (js/sorting-hat.js). */
-.card.hat-window { padding: 0; gap: 0; overflow: hidden; box-shadow: 0 30px 80px var(--shadow); }
+/* Hero owl post (js/owl-letter.js). */
+.card.owl-window { padding: 0; gap: 0; overflow: hidden; box-shadow: 0 30px 80px var(--shadow); }
 .window-bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--window-divider); background: var(--window-bar); }
 .window-dots { display: flex; gap: 7px; }
 .window-dots i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
 .window-dots i:nth-child(2) { background: #febc2e; } .window-dots i:nth-child(3) { background: #28c840; }
 .window-bar em { margin-left: auto; font: normal 0.75rem ui-monospace, "SF Mono", Menlo, monospace; color: var(--muted); }
-.hat-body { display: grid; justify-items: center; gap: 14px; padding: 18px 22px 22px; text-align: center; min-height: 360px; align-content: center;
-  background: radial-gradient(80% 60% at 50% 20%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%); }
-.hat-visual { position: relative; width: 100%; max-width: 400px; }
-.hat-stage { width: 100%; }
-.scene-svg { display: block; width: 100%; height: auto; overflow: visible; }
-.scene-svg .hat-shadow { display: none; }
-/* Floating candles bob and flicker; they flare at the verdict. */
-.candle { animation: candle-float 4s ease-in-out infinite; animation-delay: calc(var(--i) * -0.8s); }
-.candle-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: candle-flicker 0.22s ease-in-out infinite alternate; }
-.candle-glow { transform-box: fill-box; transform-origin: center; transition: transform 0.5s; }
-.is-sorted .candle-glow { transform: scale(1.7); }
-.is-sorted .candle-flame { animation-duration: 0.12s; }
-@keyframes candle-float { 50% { translate: 0 -5px; } }
-@keyframes candle-flicker { from { transform: scale(1, 1); } to { transform: scale(0.88, 1.1) skewX(3deg); } }
-/* The professor holds the hat, steps forward to place it, then steps back. */
-.prof { transition: transform 0.9s ease-in-out; }
-.prof-arm { transform-box: view-box; transform-origin: 94px 170px; transform: rotate(-38deg); transition: transform 0.9s ease-in-out; }
-.prof-eyes { transform-box: fill-box; transform-origin: center; animation: hat-blink 4.6s ease-in-out infinite; }
-.scene-hat { transform: translate(145px, 35px); transition: transform 1.1s cubic-bezier(.45, .05, .25, 1); }
-.is-placing .prof { transform: translateX(40px); }
-.is-placing .prof-arm { transform: rotate(-18deg); }
-.is-placing .scene-hat, .is-thinking .scene-hat, .is-sorted .scene-hat { transform: translate(193px, 49px) scale(0.84); }
-.is-thinking .prof-arm, .is-sorted .prof-arm { transform: rotate(62deg); }
-/* The hat itself: it breathes, sways its tip, blinks, talks and wobbles. */
-.hat-body, .hat-tip, .hat-eyes, .hat-mouth { transform-box: view-box; }
-.hat-body { transform-origin: 130px 206px; animation: hat-breathe 4.5s ease-in-out infinite; }
-.hat-tip { transform-origin: 132px 82px; animation: hat-sway 5.5s ease-in-out infinite; }
-.hat-eyes { transform-origin: 130px 126px; animation: hat-blink 5s ease-in-out infinite; }
-.hat-mouth { transform-origin: 131px 164px; transform: scaleY(0.35); }
-.hat-wobbler { transform-box: fill-box; transform-origin: 50% 90%; }
-@keyframes hat-breathe { 50% { transform: scale(1.012, 1.025); } }
-@keyframes hat-sway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-4deg); } }
-@keyframes hat-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.15); } }
-.hat-stage.poke .hat-wobbler { animation: hat-wobble 0.7s ease-in-out; }
-.is-thinking .hat-wobbler { animation: hat-wobble 1.1s ease-in-out infinite; }
-.is-thinking .hat-tip { animation: hat-sway-fast 0.8s ease-in-out infinite; }
-.is-thinking .hat-mouth, .is-sorted .hat-mouth { animation: hat-talk 0.28s ease-in-out infinite alternate; }
-.is-sorted .hat-mouth { animation-iteration-count: 8; }
-@keyframes hat-wobble { 20% { transform: rotate(-6deg); } 45% { transform: rotate(5deg); } 70% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
-@keyframes hat-sway-fast { 0%, 100% { transform: rotate(2deg); } 50% { transform: rotate(-9deg); } }
-@keyframes hat-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1.15); } }
-.hat-sparkles { position: absolute; left: 48%; top: 6%; width: 34%; height: 40%; pointer-events: none; }
-.hat-sparkles i { position: absolute; left: calc(10% + var(--i) * 8.5%); top: calc(20% + (var(--i) * 37 % 60) * 1%); width: 6px; height: 6px; border-radius: 50%;
-  background: var(--teal); box-shadow: 0 0 8px var(--teal); opacity: 0; }
-.hat-sparkles i:nth-child(odd) { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-.is-thinking .hat-sparkles i, .is-sorted .hat-sparkles i { animation: hat-sparkle 1.4s ease-in-out infinite; animation-delay: calc(var(--i) * 0.13s); }
-@keyframes hat-sparkle { 0%, 100% { opacity: 0; transform: translateY(6px) scale(0.4); } 50% { opacity: 1; transform: translateY(-10px) scale(1); } }
-.hat-speech { margin: 0; max-width: 34ch; min-height: 3em; font: italic 1rem/1.5 var(--display); color: var(--text-2); }
-.hat-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 380px; }
-.hat-choices[hidden], .hat-result[hidden] { display: none; }
-.hat-choice { font: 600 0.88rem var(--font); color: var(--text); padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; transition: border-color 0.2s, transform 0.2s, background 0.2s; }
-.hat-choice:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); transform: translateY(-2px); background: var(--surface-strong); }
-.hat-choice:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
-.hat-result { display: grid; justify-items: center; gap: 8px; animation: hat-reveal 0.5s cubic-bezier(.3, 1.4, .5, 1); }
-@keyframes hat-reveal { from { opacity: 0; transform: scale(0.8); } }
-.hat-house { margin: 0; font: 800 clamp(1.5rem, 3vw, 2rem) var(--display); letter-spacing: 0.02em;
-  background: linear-gradient(100deg, var(--accent), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hat-pitch { margin: 0; max-width: 40ch; font-size: 0.92rem; color: var(--text-3); }
-.hat-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
-@media (max-width: 560px) { .hat-body { min-height: 0; } .hat-choices { grid-template-columns: 1fr; } }
+.owl-stage { --gold: #e7c46a; --gold-hi: #fff1c2; --ink: #3a2a18; --ink-soft: #6b5338; --paper: #f4ead3; --wax: #8e1f1f; --quill: #2c4a7a;
+  position: relative; height: 440px; overflow: hidden; perspective: 1200px;
+  background: radial-gradient(60% 50% at 50% 45%, rgba(231, 196, 106, 0.16), transparent 70%); }
+:root[data-theme="light"] .owl-stage { --gold: #9a7414; --gold-hi: #b8860b; background: radial-gradient(60% 50% at 50% 45%, rgba(231, 196, 106, 0.3), transparent 70%); }
+.owl-dust { position: absolute; inset: 0; pointer-events: none; }
+.owl-dust i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: var(--gold-hi); box-shadow: 0 0 8px var(--gold); opacity: 0; animation: owl-drift var(--d) linear var(--delay) infinite; }
+@keyframes owl-drift { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(var(--x), -260px); opacity: 0; } }
+/* The envelope shows its back: flap on top, pocket in front, seal in the middle. */
+.owl-envelope { position: absolute; left: 50%; top: 52%; width: 320px; height: 210px; margin: -105px 0 0 -160px; cursor: pointer; animation: owl-float 4.5s ease-in-out infinite; }
+@keyframes owl-float { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+.owl-env-back { position: absolute; inset: 0; border-radius: 6px; background: linear-gradient(160deg, #f7eed8, #e6d4ad); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45), inset 0 0 30px rgba(140, 100, 50, 0.25); }
+.owl-env-front { position: absolute; inset: 0; z-index: 3; border-radius: 6px; pointer-events: none; filter: drop-shadow(0 -1px 0 rgba(120, 85, 40, 0.25));
+  background: linear-gradient(32deg, #efe1bf 49.6%, transparent 50%) left / 50% 100% no-repeat, linear-gradient(-32deg, #efe1bf 49.6%, transparent 50%) right / 50% 100% no-repeat; }
+.owl-flap { position: absolute; left: 0; right: 0; top: 0; height: 120px; z-index: 4; transform-origin: top; clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(180deg, #ead8b0, #dcc596); filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2)); transition: transform 0.8s cubic-bezier(.5, 0, .3, 1), z-index 0s 0.4s; }
+.owl-address { position: absolute; left: 0; right: 0; bottom: 12px; z-index: 5; text-align: center; color: var(--ink); font: italic 500 15px/1.3 "Cormorant Garamond", serif; transition: opacity 0.3s; }
+.owl-address b { display: block; margin-bottom: 4px; font: 400 22px/1 "Pinyon Script", cursive; color: var(--quill); }
+.owl-seal { position: absolute; left: 50%; top: 76px; width: 66px; height: 66px; margin: -33px 0 0 -33px; z-index: 6; padding: 0; border: 0; background: none; cursor: pointer; }
+.owl-seal span { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+  background: radial-gradient(circle at 35% 30%, #c94040, var(--wax) 55%, #4f0c0c); box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 0 0 5px rgba(0, 0, 0, 0.12), inset 0 0 0 7px rgba(255, 255, 255, 0.08);
+  font: 700 19px "Cinzel", serif; color: #5e1212; text-shadow: 1px 1px 0 rgba(255, 140, 140, 0.35), -1px -1px 0 rgba(0, 0, 0, 0.35); transition: transform 0.7s cubic-bezier(.3, 1.4, .5, 1), opacity 0.5s; }
+.owl-seal .l { clip-path: polygon(0 0, 52% 0, 44% 35%, 56% 60%, 46% 100%, 0 100%); }
+.owl-seal .r { clip-path: polygon(52% 0, 100% 0, 100% 100%, 46% 100%, 56% 60%, 44% 35%); }
+.owl-seal::after { content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; animation: owl-ring 2.2s ease-out infinite; }
+@keyframes owl-ring { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
+.owl-seal:focus-visible { outline: 2px solid var(--gold); outline-offset: 6px; border-radius: 50%; }
+.owl-hint { position: absolute; left: 0; right: 0; bottom: 22px; margin: 0; text-align: center; font: 600 13px "Cinzel", serif; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); animation: owl-pulse 2s ease-in-out infinite; transition: opacity 0.4s; }
+@keyframes owl-pulse { 50% { opacity: 0.45; } }
+/* The letter sits in the pocket until the seal breaks. */
+.owl-letter { position: absolute; left: 12px; top: 10px; width: 296px; height: 190px; z-index: 2; overflow: hidden; border-radius: 4px; color: #3a2a18; visibility: hidden;
+  background: radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.6), transparent 35%), radial-gradient(circle at 90% 95%, rgba(150, 110, 60, 0.2), transparent 45%), #f4ead3;
+  box-shadow: inset 0 0 50px rgba(140, 100, 50, 0.28), 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: top 0.9s cubic-bezier(.5, 0, .3, 1), left 1s cubic-bezier(.6, 0, .25, 1), width 1s cubic-bezier(.6, 0, .25, 1), height 1s cubic-bezier(.6, 0, .25, 1); }
+.is-open .owl-letter, .owl-letter.is-popped { visibility: visible; }
+.owl-letter-inner { height: 100%; overflow-y: auto; padding: 22px 26px 20px; opacity: 0; transition: opacity 0.6s 0.5s; scrollbar-width: thin; scrollbar-color: rgba(140, 100, 50, 0.4) transparent; }
+.owl-crest { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(140, 100, 50, 0.35); }
+.owl-crest strong { display: block; font: 700 16px "Cinzel", serif; letter-spacing: 0.14em; }
+.owl-crest small { font: italic 500 13px "Cormorant Garamond", serif; color: #6b5338; }
+.owl-shield { position: relative; flex: none; display: grid; grid-template-columns: 1fr 1fr; width: 44px; height: 50px; overflow: hidden;
+  clip-path: path("M0 0 H44 V26 C44 40 33 46 22 50 C11 46 0 40 0 26 Z"); }
+.owl-shield i:nth-child(1) { background: #8e1f1f; } .owl-shield i:nth-child(2) { background: #1f5a3a; } .owl-shield i:nth-child(3) { background: #1f3f7a; } .owl-shield i:nth-child(4) { background: #c9a227; }
+.owl-shield b { position: absolute; inset: 0 0 6px; display: grid; place-items: center; color: #fff1c2; font-size: 16px; text-shadow: 0 0 6px rgba(0, 0, 0, 0.6); }
+.owl-text { font: 500 17.5px/1.48 "Cormorant Garamond", serif; }
+.owl-text p { margin: 0 0 9px; }
+.owl-text ul { margin: 0 0 9px; padding: 0; list-style: none; }
+.owl-text li { position: relative; margin-bottom: 3px; padding-left: 18px; }
+.owl-text li::before { content: "✦"; position: absolute; left: 0; top: 3px; font-size: 11px; color: #b8913d; }
+.owl-text b { font-weight: 600; color: #6e1d14; }
+.owl-aside { color: #6b5338; }
+.owl-line { opacity: 0; filter: blur(4px); transform: translateY(4px); transition: opacity 0.7s, filter 0.7s, transform 0.7s; }
+.owl-line.is-in { opacity: 1; filter: none; transform: none; }
+.owl-sign { margin: 2px 0 12px; font: 400 40px/1 "Pinyon Script", cursive; color: #2c4a7a; clip-path: inset(0 100% 0 0); transition: clip-path 1.8s ease-in-out; }
+.owl-sign.is-in { clip-path: inset(0 0 0 0); }
+.owl-text .owl-credential { margin-top: -10px; font: italic 500 13.5px "Cormorant Garamond", serif; color: #6b5338; }
+.owl-text .owl-ps { padding-top: 8px; border-top: 1px dashed rgba(140, 100, 50, 0.35); font: italic 500 15px "Cormorant Garamond", serif; }
+.owl-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.owl-actions a, .owl-actions button { padding: 8px 14px; border-radius: 999px; font: 700 12.5px "Cinzel", serif; letter-spacing: 0.06em; text-decoration: none; cursor: pointer; }
+.owl-reply { background: #8e1f1f; color: #fbeedd; border: 1px solid #5e1212; box-shadow: 0 4px 12px rgba(142, 31, 31, 0.35); }
+.owl-reply:hover { background: #a62a2a; }
+.owl-cv { color: #3a2a18; border: 1px solid rgba(58, 42, 24, 0.45); }
+.owl-cv:hover { background: rgba(58, 42, 24, 0.07); }
+.owl-actions .owl-fold { margin-left: auto; padding: 8px 4px; border: 0; background: none; color: #8a6a40; }
+.owl-actions :focus-visible, .owl-close:focus-visible { outline: 2px solid #8e1f1f; outline-offset: 2px; }
+.owl-close { position: absolute; top: 10px; right: 12px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(58, 42, 24, 0.3); background: rgba(244, 234, 211, 0.9);
+  color: #3a2a18; font-size: 15px; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.4s 0.8s; }
+.owl-close:hover { background: #fff8e6; }
+/* Opening: the seal splits, the flap lifts and the letter rises out of the pocket. */
+.is-open .owl-envelope { animation: none; }
+.is-open .owl-seal .l { transform: translate(-26px, 30px) rotate(-40deg); opacity: 0; }
+.is-open .owl-seal .r { transform: translate(26px, 34px) rotate(35deg); opacity: 0; }
+.is-open .owl-seal::after, .is-open .owl-hint { opacity: 0; animation: none; }
+.is-open .owl-flap { transform: rotateX(180deg); z-index: 1; }
+.is-open .owl-address { opacity: 0; }
+.is-rising .owl-envelope .owl-letter { top: -140px; }
+.is-resting .owl-hint { animation: none; color: var(--gold-hi); text-shadow: 0 0 14px rgba(231, 196, 106, 0.7); }
+/* Reading: the letter rests alone on a blank screen. */
+.owl-veil { position: fixed; inset: 0; z-index: 9990; opacity: 0; pointer-events: none; transition: opacity 0.7s ease;
+  background: radial-gradient(55% 50% at 50% 45%, rgba(231, 196, 106, 0.13), transparent 70%), #04121a; }
+.owl-veil.is-on { opacity: 1; pointer-events: auto; }
+.owl-letter.is-popped { position: fixed; z-index: 9991; box-shadow: inset 0 0 60px rgba(140, 100, 50, 0.3), 0 40px 90px rgba(0, 0, 0, 0.6); }
+.owl-letter.is-popped .owl-letter-inner { opacity: 1; padding: 30px 38px 26px; }
+.owl-letter.is-popped:not(.is-folding) .owl-close { opacity: 1; pointer-events: auto; }
+.owl-letter.is-folding .owl-letter-inner { opacity: 0; transition: opacity 0.3s; }
+body.owl-reading { overflow: hidden; }
+@media (max-width: 560px) {
+  .owl-stage { height: 380px; }
+  .owl-envelope { transform: scale(0.86); animation: none; }
+  .owl-letter.is-popped .owl-letter-inner { padding: 26px 22px 22px; }
+  .owl-text { font-size: 16.5px; }
+}
 
 .impact { grid-column: 1 / -1; list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .impact-item { padding: 18px 20px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--panel); display: grid; gap: 4px; }
@@ -388,11 +418,11 @@ main { counter-reset: section; }
 .card.project .card-head { min-height: 3.4em; }
 .project-footer { margin-top: auto; display: grid; gap: 14px; }
 .project-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 34px; }
-.ask-guru {
+.ask-assistant {
   font: 500 0.8rem var(--font); color: var(--teal-text); cursor: pointer; padding: 6px 12px; border-radius: 999px;
   background: rgba(79, 209, 197, 0.08); border: 1px solid rgba(79, 209, 197, 0.35); transition: background 0.2s, transform 0.15s;
 }
-.ask-guru:hover { background: rgba(79, 209, 197, 0.18); transform: translateY(-1px); }
+.ask-assistant:hover { background: rgba(79, 209, 197, 0.18); transform: translateY(-1px); }
 
 /* Skill explorer */
 .skill-chip {
@@ -984,8 +1014,8 @@ input:focus, textarea:focus { outline: 2px solid rgba(255, 154, 133, 0.6); outli
 @media (prefers-reduced-motion: reduce) {
   .avatar-text { animation: none; }
   .skill-insight { animation: none; }
-  .hat-wobbler, .hat-body, .hat-tip, .hat-eyes, .hat-mouth, .hat-sparkles i, .hat-result, .candle, .candle-flame, .prof-eyes { animation: none !important; }
-  .prof, .prof-arm, .scene-hat { transition: none !important; }
+  .owl-envelope, .owl-dust i, .owl-seal::after, .owl-hint { animation: none !important; }
+  .owl-letter, .owl-flap, .owl-seal span, .owl-line, .owl-sign, .owl-veil { transition: none !important; }
 }
 
 /* Project logos */
@@ -1021,14 +1051,14 @@ button[type="submit"]:disabled { opacity: 0.6; cursor: progress; transform: none
 .social-icon { display: grid; place-items: center; }
 
 /* Mobile: the header shrinks to the name, and a floating icon tab bar takes
-   over navigation, with Guru's round button beside it. */
+   over navigation, with Ada's round button beside it. */
 .tab-bar { display: none; }
 @media (max-width: 767px) {
   .site-header { position: static; width: fit-content; margin: 16px 0 0 16px; padding: 6px 6px 6px 18px; gap: 14px; }
   .brand { border-right: 0; padding-right: 0; }
   .site-nav { display: none; }
   .tab-bar {
-    /* The bar (6 tabs) and Guru's button are centered together as one group:
+    /* The bar (6 tabs) and Ada's button are centered together as one group:
        bar ~276px + 16px gap + 60px button = 352px. */
     position: fixed; z-index: 40; left: max(8px, calc(50% - 176px)); bottom: calc(16px + env(safe-area-inset-bottom));
     display: flex; gap: 2px; padding: 6px; isolation: isolate;
@@ -1088,7 +1118,7 @@ button[type="submit"]:disabled { opacity: 0.6; cursor: progress; transform: none
   .tab-bar.lens-off .tab-lens { opacity: 0; }
 
   /* No blur support, or the reader asked for less transparency: a solid bar instead of glass. */
-  /* The Guru button has the same fallback in chatbot.css. */
+  /* The Ada button has the same fallback in chatbot.css. */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .tab-bar { background: var(--bar); }
   }
