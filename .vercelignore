@@ -1,0 +1,8 @@
+.claude
+.git
+node_modules
+tests
+.env*
+.DS_Store
+scripts
+evals

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Inchara Adigante — AI/ML & Data Engineer</title>
+  <meta name="description" content="Inchara Adigante is an AI/ML and data engineer finishing an MS in Information Systems at Northeastern University, building LLM applications, data pipelines, warehouses and analytics." />
+  <link rel="canonical" href="https://inchara-adigante.vercel.app/" />
+  <meta property="og:title" content="Inchara Adigante — AI/ML & Data Engineer" />
+  <meta property="og:description" content="Inchara Adigante is an AI/ML and data engineer finishing an MS in Information Systems at Northeastern University, building LLM applications, data pipelines, warehouses and analytics." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://inchara-adigante.vercel.app/" />
+  <meta property="og:image" content="https://inchara-adigante.vercel.app/assets/og/home.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#181a21" />
+  <link rel="icon" type="image/webp" href="/assets/inchara-avatar.webp" />
+  <link rel="preload" as="image" href="/assets/inchara-casual.webp" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script>try{var t=localStorage.getItem("theme")==="light"?"light":"dark";document.documentElement.dataset.theme=t;if(t==="light"){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content","#f5f5f8")}}catch(e){document.documentElement.dataset.theme="dark"}</script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/pages.css" />
+  <link rel="stylesheet" href="/chatbot.css" />
+</head>
+<body>
+  <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header id="site-header" class="site-header"></header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-text">
+        <div class="hero-id">
+          <span class="avatar-badge">
+            <svg class="avatar-text" viewBox="0 0 120 120" aria-hidden="true">
+              <defs><path id="avatar-circle" d="M60 60m-51 0a51 51 0 1 1 102 0a51 51 0 1 1-102 0" /></defs>
+              <text><textPath id="avatar-text" href="#avatar-circle" textLength="314" lengthAdjust="spacing">OPEN TO WORK · JAN 2027 · AI + DATA ENGINEER ·</textPath></text>
+            </svg>
+            <img src="/assets/inchara-casual.webp" alt="Photo of Inchara Adigante" width="72" height="72" />
+          </span>
+          <a class="hero-creds" href="#certifications" aria-label="Certified: AWS Data Engineer – Associate. See certifications.">
+            <span class="cred-stickers" aria-hidden="true">
+              <span class="cred-sticker" style="--badge: url(/assets/certs/aws-dea-badge.webp)"><img src="/assets/certs/aws-dea-badge.webp" alt="" width="64" height="64" /><span class="cred-shine"></span></span>
+            </span>
+            <span class="cred-text" aria-hidden="true">
+              <span class="cred-label">Certified</span>
+              <span class="cred-name">AWS Data Engineer – Associate</span>
+            </span>
+          </a>
+          <p class="status-pill"><span class="pulse" aria-hidden="true"></span><span id="hero-availability"></span></p>
+        </div>
+        <p class="eyebrow">Hi, I'm Inchara Adigante. I build</p>
+        <h1><span class="sr-only">multi-agent AI systems, semantic search with RAG, real-time data pipelines, warehouses in Snowflake and dbt, and dashboards teams trust.</span><span id="hero-typed" class="gradient-text typed" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span></h1>
+        <p id="hero-tagline" class="hero-lead"></p>
+        <ul id="hero-roles" class="pill-row"></ul>
+        <div class="hero-actions">
+          <a class="btn btn-light" href="/assets/Inchara_Adigante_Resume.pdf" target="_blank" rel="noopener">Resume ↓</a>
+          <button class="btn btn-ghost" type="button" data-open-chat>✦ Ask Ada, my AI assistant <kbd>/</kbd></button>
+          <div id="hero-socials" class="socials"></div>
+        </div>
+      </div>
+      <div class="game-slot">
+      <aside class="card game-window" aria-label="Pixel dinosaur runner game">
+        <div class="window-bar">
+          <div class="window-controls">
+            <button type="button" class="win-btn win-close" data-action="close" aria-label="Close the game" title="Close"></button>
+            <button type="button" class="win-btn win-min" data-action="minimize" aria-label="Minimize the game" title="Minimize"></button>
+            <button type="button" class="win-btn win-max" data-action="maximize" aria-label="Maximize the game" aria-pressed="false" title="Maximize"></button>
+          </div>
+          <em>offline — dino-run</em>
+        </div>
+        <canvas id="dino-game" class="dino-canvas" tabindex="0" role="application" aria-label="Pixel dinosaur runner. Press Space or the Up arrow to jump and the Down arrow to duck. On a touch screen, tap to jump and hold the left side to duck."></canvas>
+        <p class="game-hint" aria-hidden="true"><kbd>Space</kbd> / <kbd>↑</kbd> jump · <kbd>↓</kbd> duck · on phones: tap to jump, hold left to duck</p>
+        <p id="dino-status" class="sr-only" aria-live="polite"></p>
+      </aside>
+      <button class="game-icon" type="button" hidden aria-label="Open the dino-run game"><canvas aria-hidden="true"></canvas><span>dino-run</span></button>
+      </div>
+      <ul id="impact-stats" class="impact"></ul>
+      <p class="hint small muted" aria-hidden="true">Move your cursor to fire the network · click empty space for a shockwave · jump the cacti in the game</p>
+    </section>
+
+    <section id="about" class="section">
+      <h2 class="section-title">About Me</h2>
+      <div class="about-grid">
+        <figure class="portrait reveal">
+          <div class="portrait-frame">
+            <img src="/assets/inchara-portrait.webp" alt="Portrait of Inchara Adigante" width="714" height="1000" loading="lazy" />
+            <figcaption class="portrait-caption">
+              <strong>Inchara Adigante</strong>
+              <span class="portrait-role">AI/ML &amp; Data Engineer · MS IS @ Northeastern</span>
+              <ul class="portrait-facts">
+                <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m9 14.5-1.5 7.5 4.5-2.5 4.5 2.5-1.5-7.5"/></svg>AWS Data Engineer</li>
+                <li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Boston, MA</li>
+              </ul>
+            </figcaption>
+          </div>
+        </figure>
+        <div id="about-body" class="card prose reveal"></div>
+      </div>
+    </section>
+
+    <section id="education" class="section">
+      <h2 class="section-title">Education</h2>
+      <div id="education-list" class="grid two"></div>
+    </section>
+
+    <section id="experience" class="section">
+      <div class="section-head">
+        <h2 class="section-title">Experience</h2>
+        <a class="link-arrow" href="/experience/">Full history →</a>
+      </div>
+      <div id="experience-list" class="timeline"></div>
+    </section>
+
+    <section id="projects" class="section">
+      <div class="section-head">
+        <h2 class="section-title">Projects</h2>
+        <a class="link-arrow" href="https://github.com/IncharaAdigante" target="_blank" rel="noopener">View on GitHub →</a>
+      </div>
+      <div id="project-list" class="grid two"></div>
+    </section>
+
+    <section id="skills" class="section">
+      <h2 class="section-title">Skills &amp; Tech Stack</h2>
+      <p class="section-sub muted">Hover or tap a skill to see where I've used it.</p>
+      <div id="skill-insight" class="skill-insight card" aria-live="polite" hidden></div>
+      <div id="skill-list" class="grid three"></div>
+    </section>
+
+    <section id="achievements" class="section">
+      <h2 class="section-title">Achievements</h2>
+      <div id="achievement-list" class="grid two"></div>
+      <div class="grid spaced">
+        <article class="card reveal"><h3>Research Publication</h3><p id="publication" class="small"></p></article>
+      </div>
+    </section>
+
+    <section id="certifications" class="section">
+      <h2 class="section-title">Certifications &amp; Courses</h2>
+      <p class="section-sub muted">Professional certifications, courses and volunteering.</p>
+      <div id="cert-list"></div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="contact-grid">
+        <div class="contact-intro">
+          <h2 class="section-title">Get in Touch</h2>
+          <p id="contact-lead" class="contact-lead">I'm looking for full-time AI/ML, data engineering and analytics roles starting January 2027. If you have a role, a project or just a question, send me a message or reach out directly.</p>
+          <ul id="contact-links" class="contact-links" aria-label="Find me"></ul>
+          <p id="contact-meta" class="contact-meta small muted">Boston, MA · Open to relocation</p>
+        </div>
+        <form id="contact-form" class="card reveal contact-form" novalidate>
+          <div class="form-row">
+            <label>Name<input name="name" autocomplete="name" maxlength="100" required aria-describedby="err-name" />
+              <span id="err-name" class="field-error" aria-live="polite"></span></label>
+            <label>Email<input name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" required aria-describedby="err-email" />
+              <span id="err-email" class="field-error" aria-live="polite"></span></label>
+          </div>
+          <label>Message<textarea name="message" rows="6" maxlength="2000" required placeholder="Hi Inchara, I'd like to talk about…" aria-describedby="err-message"></textarea>
+            <span id="err-message" class="field-error" aria-live="polite"></span></label>
+          <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+          <button class="btn btn-light" type="submit">Send Message</button>
+          <div id="contact-status" class="contact-status small" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <div id="chatbot"></div>
+
+  <noscript><p class="noscript">This portfolio needs JavaScript to render its content. Resume: <a href="/assets/Inchara_Adigante_Resume.pdf">PDF</a>.</p></noscript>
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
