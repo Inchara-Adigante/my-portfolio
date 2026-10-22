@@ -5,7 +5,7 @@
 // skill groups list the ids they support in `roles`; everything else dims.
 export const FOCUS = Object.freeze([
   { id: "ai", label: "AI/ML Engineering",
-    pitch: "Multi-agent LLM systems with LangGraph, semantic search over OpenAI embeddings, and the FastAPI services around them." },
+    pitch: "A TensorFlow failure predictor with 7.5× lift over the fleet average, plus a LangGraph multi-agent system with semantic search." },
   { id: "data", label: "Data Engineering",
     pitch: "Production Spark, Snowflake and Airflow pipelines: a 3-hour report cut to 10 minutes and 15+ ETL jobs made 45% faster." },
   { id: "analytics", label: "Analytics Engineering",
@@ -52,7 +52,7 @@ export const PROFILE = Object.freeze({
   about: [
     "I'm Inchara, an AI/ML and data engineer finishing my Master's in Information Systems at Northeastern University. Most recently I was a data engineer co-op at Skyworks Solutions, where I unified manufacturing, sales and SAP data with Python, SQL and Spark, and took a three-hour reporting workflow down to under ten minutes.",
     "I care about the unglamorous parts: the join nobody profiled, the duplicate records nobody caught, the job nobody questioned. That habit came from two years of production work, first shipping Snowflake ETL at Accenture, where I made 15+ scheduled workflows 45% faster, and before that processing radar test data at Bharat Electronics.",
-    "On the AI side I build multi-agent LLM systems. Jobzilla AI, built with two teammates, has a Recruiter, a Career Coach and a Judge debate a candidate's fit using LangGraph, with semantic search in Pinecone. I'm looking for full-time roles in AI/ML engineering, data engineering or analytics from January 2027.",
+    "On the ML side I build systems end to end. My EV reliability platform takes raw fleet data through validated SQL Server tables to Weibull reliability models and a TensorFlow failure predictor. Jobzilla AI, built with two teammates, has a Recruiter, a Career Coach and a Judge debate a candidate's fit using LangGraph. I'm looking for full-time roles in data engineering, ML engineering or analytics from January 2027.",
   ],
   hobbies: [],
   // The assistant shares these only when a visitor asks about that exact topic, and never
@@ -69,7 +69,7 @@ export const PROFILE = Object.freeze({
     email: "adiganteinchara@gmail.com",
     phone: null,
     linkedin: "https://www.linkedin.com/in/incharaadigante",
-    github: "https://github.com/IncharaAdigante",
+    github: "https://github.com/Inchara-Adigante",
     instagram: null,
     resume: "/assets/Inchara_Adigante_Resume.pdf",
   }),
@@ -145,23 +145,47 @@ export const PROFILE = Object.freeze({
   // the assistant uses when answering questions.
   projects: [
     {
+      id: "ev",
+      roles: ["ai", "data", "analytics"],
+      name: "EV Reliability Intelligence & Failure Prediction Platform",
+      date: "",
+      repo: "https://github.com/Inchara-Adigante/ev-reliability-platform",
+      keywords: ["ev", "electric vehicle", "reliability", "weibull", "failure", "mtbf", "fleet", "prediction", "tensorflow", "sql server", "splunk", "survival", "predictive maintenance"],
+      stack: ["Python", "SQL Server", "SciPy Weibull", "TensorFlow", "Power BI"],
+      tags: ["Pandas", "scikit-learn", "Splunk", "Docker", "pytest", "Reliability Analysis", "Survival Analysis"],
+      points: [
+        "Built a Python pipeline that validates, cleans and loads service data for a simulated 2,000-vehicle EV fleet into SQL Server, logging every run and rejected record.",
+        "Fit Weibull reliability models per component and trained a TensorFlow failure model whose high-risk tier holds 4.6% of parts but catches 34% of 90-day failures.",
+      ],
+      details: [
+        "The fleet simulation uses Weibull component lifetimes affected by heat, cold, fast charging and mileage, with dirty records injected on purpose to test the pipeline.",
+        "Pipeline results (seed 42): 3,410 failures, 244 records rejected with reasons (0.7%), 181 duplicates removed and 210 repeat repairs flagged (6.2% of failures). Each load is logged to a pipeline_log table.",
+        "Reliability analysis computes MTBF, failures per 100 unit-years and repeat-repair rates, and classifies components as infant mortality, random or wear-out from censored Weibull fits. The 12V battery fails most often (19.57 per 100 unit-years, MTBF 5.1 years); the HV contactor shows infant mortality (β 0.72).",
+        "Battery-pack failures run about 5× higher in hot climates with heavy fast charging (9.9 vs 2.0 per 100 unit-years).",
+        "The 90-day failure model (TensorFlow Keras MLP) reached ROC-AUC 0.755 and PR-AUC 0.111, beating a logistic regression baseline (0.744 / 0.085). Its high-risk tier has a 12.7% failure rate, 7.5× the fleet average.",
+        "Results feed Power BI DAX measures and Splunk alerts; 27 pytest tests run without SQL Server or TensorFlow, and the stack runs in Docker.",
+      ],
+    },
+    {
       id: "jobzilla",
       roles: ["ai"],
       name: "Jobzilla AI — Multi-Agent Job Search Assistant",
       date: "",
-      repo: "https://github.com/IncharaAdigante/jobzilla-ai",
+      repo: "https://github.com/Inchara-Adigante/JobzillaAI",
       keywords: ["jobzilla", "multi-agent", "multi agent", "agents", "debate", "recruiter", "coach", "judge", "cover letter", "langgraph", "pinecone", "mcp", "streamlit", "semantic search", "embeddings"],
       stack: ["Streamlit", "FastAPI", "LangGraph", "GPT-4", "Pinecone"],
       tags: ["Python", "LLMs", "RAG", "Agentic AI", "REST APIs", "PostgreSQL", "Redis", "Docker", "Airflow"],
       points: [
         "Built a LangGraph multi-agent debate in which a Recruiter, a Career Coach and a Judge argue a candidate's fit for a role and return a reasoned verdict.",
-        "Matched résumés to jobs by meaning with OpenAI embeddings in Pinecone, generated tailored cover letters, and reviewed GitHub portfolios through an MCP server.",
+        "Cut a tailored application from about 45 minutes to under 30 seconds with Pinecone semantic matching, résumé tailoring, cover letters and MCP-based GitHub review.",
       ],
       details: [
         "Built with a 3-person team (Hrishi Pal, Inchara Adigante and Sahil Kasliwal).",
         "The Recruiter agent looks for weaknesses, the Career Coach highlights strengths and transferable skills, and the Judge weighs both sides and issues the verdict. A LangGraph StateGraph orchestrates them.",
         "A Streamlit frontend talks to a FastAPI backend that uses PostgreSQL (SQLAlchemy), Redis caching and Pinecone vector search.",
-        "Job data moves through a Bronze-Silver-Gold pipeline with scheduled Airflow DAGs, and MCP connectors bring in job-market listings and GitHub context.",
+        "Job data moves through a Bronze-Silver-Gold pipeline; 4 Airflow DAGs run daily and weekly, including daily email notifications, and MCP connectors bring in job-market listings and GitHub context.",
+        "Beyond OpenAI it also uses Gemini and Mistral models, stores files in AWS S3, and adds ATS-oriented résumé tailoring and skill-gap analysis. If the Recruiter and Coach scores differ by more than 30%, the agents run another debate round.",
+        "It deploys with CI/CD to GCP Cloud Run.",
         "The whole stack runs with Docker Compose, and GitHub Actions workflows live in the repo.",
       ],
       // A scripted sample for the "Watch the agents debate" demo on the card. Not real output.
@@ -209,10 +233,10 @@ export const PROFILE = Object.freeze({
   // Posts live at /writing/<slug>/. Empty for now.
   writing: [],
   skills: [
-    { group: "AI / LLMs", roles: ["ai"], items: ["LangGraph", "LangChain", "OpenAI API", "GPT-4", "RAG", "Embeddings", "Pinecone", "MCP", "Multi-Agent Systems"] },
-    { group: "Data Engineering", roles: ["data", "analytics"], items: ["Python", "SQL", "Spark / PySpark", "Kafka", "Airflow", "dbt", "Snowflake", "Redshift", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
-    { group: "Cloud / Backend", roles: ["ai", "data"], items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions"] },
-    { group: "Analytics & BI", roles: ["analytics"], items: ["Power BI", "Tableau", "Pandas", "NumPy", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },
+    { group: "AI / ML", roles: ["ai"], items: ["TensorFlow", "scikit-learn", "SciPy", "Survival Analysis", "LangGraph", "LangChain", "OpenAI API", "RAG", "Pinecone", "MCP", "Multi-Agent Systems"] },
+    { group: "Data Engineering", roles: ["data", "analytics"], items: ["Python", "SQL", "Spark / PySpark", "Kafka", "Airflow", "dbt", "Snowflake", "Redshift", "SQL Server", "PostgreSQL", "MySQL", "MongoDB", "Redis"] },
+    { group: "Cloud / Backend", roles: ["ai", "data"], items: ["AWS S3", "AWS Glue", "AWS Lambda", "Athena", "CloudWatch", "GCP", "Azure", "FastAPI", "Streamlit", "REST APIs", "Docker", "GitHub Actions", "Jenkins"] },
+    { group: "Analytics & BI", roles: ["analytics"], items: ["Power BI", "Tableau", "Splunk", "Pandas", "NumPy", "Reliability Analysis", "A/B Testing", "Data Quality", "Dimensional Modeling", "SAP"] },
   ],
   // group: one of CERT_GROUPS. badge = the issuer's official badge; logo = the issuer's official logo
   // (unchanged, from its own site), used when there is no badge. logoStyle "fill": the file is already a

@@ -34,11 +34,21 @@ test("the assistant still knows the details that don't fit on the cards", async 
   assert.match(text, /3-person team/);
 });
 
-test("Jobzilla AI leads the list and is known to the assistant", async () => {
+test("the EV platform leads the list and its numbers are known to the assistant", async () => {
   const { answerLocally } = await import("../js/local-answers.js");
-  const project = PROFILE.projects[0];
-  assert.equal(project.id, "jobzilla");
-  assert.equal(project.repo, "https://github.com/IncharaAdigante/jobzilla-ai");
+  const ev = PROFILE.projects[0];
+  assert.equal(ev.id, "ev");
+  assert.equal(ev.repo, "https://github.com/Inchara-Adigante/ev-reliability-platform");
+  const reply = answerLocally("Tell me about the EV reliability platform");
+  assert.match(reply, /2,000-vehicle/);
+  assert.match(reply, /34% of 90-day failures/);
+  assert.match(reply, /ROC-AUC 0\.755/);
+});
+
+test("Jobzilla AI is known to the assistant", async () => {
+  const { answerLocally } = await import("../js/local-answers.js");
+  const project = PROFILE.projects.find((p) => p.id === "jobzilla");
+  assert.equal(project.repo, "https://github.com/Inchara-Adigante/JobzillaAI");
   assert.deepEqual(project.stack, ["Streamlit", "FastAPI", "LangGraph", "GPT-4", "Pinecone"]);
   const reply = answerLocally("Tell me about Jobzilla AI");
   assert.match(reply, /Recruiter, a Career Coach and a Judge/);
